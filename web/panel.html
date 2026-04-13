@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Che Roga - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           VARIABLES DE DISEÑO - PALETA CHE ROGA
+           ============================================ */
+        :root {
+            /* === COLORES DEL SIDEBAR (Azul Marino Profundo) === */
+            --sidebar-bg: #0a1628;
+            --sidebar-bg-secondary: #0f1f35;
+            --sidebar-bg-hover: #142640;
+            --sidebar-bg-active: #1a3050;
+            --sidebar-text: #ffffff;
+            --sidebar-text-muted: #7a9cc6;
+            --sidebar-text-subtle: #4a6a94;
+            --sidebar-border: #1a3050;
+            --sidebar-accent: #3b82f6;
+            --sidebar-accent-light: #60a5fa;
+            
+            /* === COLORES DEL MAIN (FONDO CLARO) === */
+            --main-bg: #f0f4f8;
+            --main-bg-alt: #e8eef4;
+            --main-bg-card: #ffffff;
+            --main-text: #0f1c2e;
+            --main-text-secondary: #4a5568;
+            --main-text-muted: #718096;
+            --main-border: #d1dce6;
+            --main-border-light: #e2eaf2;
+            
+            /* === COLORES DE ACENTO === */
+            --accent-primary: #2563eb;
+            --accent-primary-light: #3b82f6;
+            --accent-success: #059669;
+            --accent-success-light: #10b981;
+            --accent-warning: #d97706;
+            --accent-warning-light: #f59e0b;
+            --accent-danger: #dc2626;
+            --accent-danger-light: #ef4444;
+            --accent-info: #0891b2;
+            --accent-info-light: #06b6d4;
+            
+            /* === GRADIENTES === */
+            --gradient-sidebar: linear-gradient(180deg, #0a1628 0%, #0f1f35 50%, #0a1628 100%);
+            --gradient-accent-bar: linear-gradient(180deg, #3b82f6 0%, #60a5fa 100%);
+            --gradient-header: linear-gradient(90deg, #0a1628 0%, #1a3050 100%);
+            
+            /* === SOMBRAS === */
+            --shadow-sm: 0 1px 2px rgba(10, 22, 40, 0.05);
+            --shadow-md: 0 4px 16px rgba(10, 22, 40, 0.1);
+            --shadow-lg: 0 12px 40px rgba(10, 22, 40, 0.15);
+            --shadow-card: 0 2px 8px rgba(10, 22, 40, 0.06);
+            --shadow-sidebar: 6px 0 24px rgba(0, 0, 0, 0.25);
+            
+            /* === DIMENSIONES === */
+            --sidebar-width: 270px;
+            --header-height: 64px;
+            --spacing-unit: 4px;
+            
+            /* === BORDES === */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            
+            /* === TRANSICIONES === */
+            --transition-fast: 150ms ease;
+            --transition-base: 250ms ease;
+            --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* === TIPOGRAFÍA === */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--main-bg);
+            color: var(--main-text);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* === SIDEBAR ESTILOS === */
+        .sidebar {
+            background: var(--gradient-sidebar);
+            box-shadow: var(--shadow-sidebar);
+            transition: transform var(--transition-slow);
+        }
+
+        .sidebar-item {
+            color: var(--sidebar-text-muted);
+            transition: all var(--transition-base);
+            border-radius: var(--radius-md);
+            position: relative;
+        }
+
+        .sidebar-item:hover {
+            background: var(--sidebar-bg-hover);
+            color: var(--sidebar-text);
+        }
+
+        .sidebar-item.active {
+            background: var(--sidebar-bg-active);
+            color: var(--sidebar-text);
+        }
+
+        .sidebar-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background: var(--gradient-accent-bar);
+            border-radius: 0 3px 3px 0;
+        }
+
+        /* === SUBMENU === */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-slow);
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .submenu-item {
+            color: var(--sidebar-text-subtle);
+            transition: all var(--transition-base);
+            padding-left: 3rem;
+            position: relative;
+        }
+
+        .submenu-item::before {
+            content: '';
+            position: absolute;
+            left: 2.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--sidebar-text-subtle);
+            opacity: 0.5;
+            transition: all var(--transition-base);
+        }
+
+        .submenu-item:hover {
+            color: var(--sidebar-text);
+            background: transparent;
+        }
+
+        .submenu-item:hover::before {
+            background: var(--sidebar-accent-light);
+            opacity: 1;
+        }
+
+        .submenu-item.active {
+            color: var(--sidebar-accent-light);
+        }
+
+        .submenu-item.active::before {
+            background: var(--sidebar-accent-light);
+            opacity: 1;
+        }
+
+        .submenu-arrow {
+            transition: transform var(--transition-base);
+        }
+
+        .has-submenu.open .submenu-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* === TARJETAS === */
+        .card {
+            background: var(--main-bg-card);
+            border: 1px solid var(--main-border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            transition: all var(--transition-base);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* === ANIMACIONES === */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        /* Stagger delays */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+
+        /* === OVERLAY MÓVIL === */
+        .sidebar-overlay {
+            background: rgba(10, 22, 40, 0.7);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-base);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* === PATRÓN DE FONDO === */
+        .bg-pattern {
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.04) 0%, transparent 50%),
+                linear-gradient(180deg, var(--main-bg) 0%, var(--main-bg-alt) 100%);
+        }
+
+        /* === SCROLLBAR === */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--main-border-light);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--main-text-muted);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--main-text-secondary);
+        }
+
+        /* Sidebar scrollbar */
+        .sidebar ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* === FOCUS STATES === */
+        .focus-ring:focus-visible {
+            outline: 2px solid var(--accent-primary-light);
+            outline-offset: 2px;
+        }
+
+        /* === BADGES === */
+        .badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: var(--radius-sm);
+        }
+
+        .badge-success { background: rgba(5, 150, 105, 0.12); color: #059669; }
+        .badge-warning { background: rgba(217, 119, 6, 0.12); color: #d97706; }
+        .badge-danger { background: rgba(220, 38, 38, 0.12); color: #dc2626; }
+        .badge-info { background: rgba(8, 145, 178, 0.12); color: #0891b2; }
+
+        /* === PROGRESS BAR === */
+        .progress-bar {
+            background: var(--main-border-light);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        /* === REDUCED MOTION === */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* === BRAND ACCENT BAR === */
+        .brand-accent {
+            width: 4px;
+            background: var(--gradient-accent-bar);
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-pattern">
+
+
+
+    <!-- === OVERLAY MÓVIL === -->
+    <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 z-40 lg:hidden"></div>
+
+    <!-- === SIDEBAR === -->
+    <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full z-50 w-[270px] flex flex-col transform -translate-x-full lg:translate-x-0">
+        
+        <!-- Brand Header -->
+        <div class="flex items-center h-16 px-5 border-b" style="border-color: rgba(255,255,255,0.08);">
+            <div class="brand-accent absolute left-0 top-0 h-16"></div>
+            <div class="flex items-center gap-3 pl-2">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3);">
+                    <svg class="w-5 h-5" style="color: var(--sidebar-accent-light);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-base font-semibold text-white tracking-tight block" style="font-family: 'Space Grotesk', sans-serif;">Che Roga</span>
+                    <span class="text-xs" style="color: var(--sidebar-text-muted);">CRM Dashboard</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación -->
+        <nav class="flex-1 py-4 px-3 overflow-y-auto">
+    
+            <div class="mb-3 px-3">
+                <span class="text-[10px] font-semibold uppercase tracking-widest" 
+                style="color: var(--sidebar-text-subtle);">Principal</span>
+            </div>
+            
+            <ul class="space-y-1">
+                <li>
+                    <a hx-get="/dashboard-partial" 
+                    hx-target="#main-content" 
+                    class="sidebar-item active flex items-center gap-3 px-3 py-2.5 focus-ring cursor-pointer">
+                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                     </svg>
+                     <span class="text-sm font-medium">Dashboard</span>
+                 </a>
+
+                </li>
+        
+                <li class="has-submenu">
+                    <button class="sidebar-item w-full flex items-center justify-between gap-3 px-3 py-2.5 focus-ring" onclick="toggleSubmenu(this)">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            <span class="text-sm font-medium">Leads</span>
+                        </div>
+                        <svg class="submenu-arrow w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <ul class="submenu space-y-0.5 mt-1">
+                        <li>
+                            <a hx-get="/lead-importar" 
+                            hx-target="#main-content" 
+                            class="sidebar-item submenu-item flex items-center gap-2 px-3 py-2 text-sm focus-ring cursor-pointer">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                             </svg>
+                             Migrar Excel
+                            </a>
+                        </li>
+                        <li>
+                            <a hx-get="/lead-limpiar" 
+                            hx-target="#main-content" 
+                            class="sidebar-item submenu-item flex items-center gap-2 px-3 py-2 text-sm focus-ring text-red-400 cursor-pointer">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                             </svg>
+                             Borrar Datos
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                
+            </ul>
+
+            <div class="my-2 px-3">
+                <span class="text-[10px] font-semibold uppercase tracking-widest" 
+                style="color: var(--sidebar-text-subtle);">Análisis</span>
+            </div>
+            
+            <ul class="space-y-1 mb-6">
+                <li class="has-submenu">
+                    <button class="sidebar-item w-full flex items-center justify-between gap-3 px-3 py-2.5 focus-ring" onclick="toggleSubmenu(this)">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            <span class="text-sm font-medium">Reportes</span>
+                        </div>
+                        <svg class="submenu-arrow w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <ul class="submenu space-y-0.5 mt-1">
+                        <li>
+                            <a hx-get="/analitica-resumen" 
+                               hx-target="#main-content" 
+                               class="sidebar-item submenu-item flex items-center gap-2 px-3 py-2 text-sm focus-ring cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Resumen Ejecutivo
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+
+        </nav>
+
+
+
+
+        <!-- Footer Info -->
+        <div class="px-4 py-4 border-t" style="border-color: rgba(255,255,255,0.08);">
+            <div class="px-3 py-2 rounded-lg" style="background: rgba(255,255,255,0.03);">
+                <p class="text-xs font-medium" style="color: var(--sidebar-text-muted);">Periodo Activo</p>
+                <p class="text-xs mt-1" style="color: var(--sidebar-text-subtle);">Oct 2025 - Abr 2026</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- === MAIN CONTENT === -->
+    <main class="lg:ml-[270px] min-h-screen transition-all duration-300">
+        
+        <!-- Header -->
+        <header class="h-16 bg-white/90 backdrop-blur-md border-b sticky top-0 z-30" style="border-color: var(--main-border-light);">
+            <div class="h-full px-4 lg:px-6 flex items-center justify-between">
+                
+                <!-- Mobile menu + Title -->
+                <div class="flex items-center gap-4">
+                    <button id="menuToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors focus-ring" aria-label="Abrir menu">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-semibold" style="font-family: 'Space Grotesk', sans-serif; color: var(--main-text);">Analisis Estrategico</h1>
+                        <p class="text-xs hidden sm:block" style="color: var(--main-text-muted);">Empresa</p>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-3">
+
+
+                    <!-- Date -->
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl" style="background: var(--main-bg);">
+                        <svg class="w-4 h-4" style="color: var(--main-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="text-sm font-medium" style="color: var(--main-text-secondary);" id="currentDate"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div id="main-content" class="p-4 lg:p-6">
+        </div>
+
+
+        
+    </main>
+
+    <script>
+        // === INICIALIZACION ===
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const menuToggle = document.getElementById('menuToggle');
+            const currentDateEl = document.getElementById('currentDate');
+
+            // Fecha actual
+            if (currentDateEl) {
+                const options = { weekday: 'short', day: 'numeric', month: 'short' };
+                currentDateEl.textContent = new Date().toLocaleDateString('es-ES', options);
+            }
+
+            // === SIDEBAR FUNCTIONS ===
+            function openSidebar() {
+                if (sidebar && sidebarOverlay) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            function closeSidebar() {
+                if (sidebar && sidebarOverlay) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', openSidebar);
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    closeSidebar();
+                }
+            });
+
+            // === SUBMENU TOGGLE ===
+            window.toggleSubmenu = function(button) {
+                const parentLi = button.closest('.has-submenu');
+                if (!parentLi) return;
+                
+                const submenu = parentLi.querySelector('.submenu');
+                const isOpen = parentLi.classList.contains('open');
+
+                // Cerrar otros submenus
+                document.querySelectorAll('.has-submenu.open').forEach(function(item) {
+                    if (item !== parentLi) {
+                        item.classList.remove('open');
+                        const otherSubmenu = item.querySelector('.submenu');
+                        if (otherSubmenu) {
+                            otherSubmenu.classList.remove('open');
+                        }
+                    }
+                });
+
+                // Toggle actual
+                parentLi.classList.toggle('open');
+                if (submenu) {
+                    submenu.classList.toggle('open');
+                }
+            };
+
+            // === NAV ITEM ACTIVE STATE ===
+            const navItems = document.querySelectorAll('.sidebar-item:not(.has-submenu .sidebar-item)');
+            navItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    if (this.tagName === 'A') {
+                        document.querySelectorAll('.sidebar-item.active').forEach(function(nav) {
+                            nav.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        
+                        if (window.innerWidth < 1024) {
+                            closeSidebar();
+                        }
+                    }
+                });
+            });
+
+            // Submenu items click
+            const submenuItems = document.querySelectorAll('.submenu-item');
+            submenuItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.submenu-item.active').forEach(function(nav) {
+                        nav.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    if (window.innerWidth < 1024) {
+                        closeSidebar();
+                    }
+                });
+            });
+
+            // === RESIZE HANDLER ===
+            let resizeTimer = null;
+            window.addEventListener('resize', function() {
+                if (resizeTimer) {
+                    clearTimeout(resizeTimer);
+                }
+                resizeTimer = setTimeout(function() {
+                    if (window.innerWidth >= 1024) {
+                        if (sidebar) sidebar.classList.remove('-translate-x-full');
+                        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    } else {
+                        if (sidebar) sidebar.classList.add('-translate-x-full');
+                    }
+                }, 150);
+            });
+
+            // === PROGRESS BAR ANIMATION ===
+            setTimeout(function() {
+                document.querySelectorAll('.progress-fill').forEach(function(bar) {
+                    const width = bar.style.width;
+                    bar.style.width = '0';
+                    setTimeout(function() {
+                        bar.style.width = width;
+                    }, 100);
+                });
+            }, 500);
+
+            // === INTERSECTION OBSERVER FOR CARDS ===
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.card').forEach(function(card) {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

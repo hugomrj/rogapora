@@ -1,0 +1,68 @@
+<div class="animate-fade-in-up">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold" style="font-family: 'Space Grotesk', sans-serif; color: var(--main-text);">Gestión de Datos</h2>
+        <p class="text-sm" style="color: var(--main-text-muted);">Mantenimiento y limpieza de la base de datos de leads</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1">
+            <div class="card p-5 border-2 border-red-500 bg-red-50/30">
+                <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-red-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Zona de Peligro
+                </h3>
+                <p class="text-xs leading-relaxed" style="color: var(--main-text-secondary);">
+                    Al ejecutar esta acción, se eliminarán <strong>todos</strong> los registros de leads de forma permanente. Esta acción no se puede deshacer.
+                </p>
+            </div>
+        </div>
+
+
+
+
+        <div class="lg:col-span-2">
+            <div class="card p-8">
+
+                <div class="flex flex-col items-center justify-center text-center space-y-6">
+
+                    
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center" 
+                        style="background: rgba(239, 68, 68, 0.1);">
+                        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-bold" style="color: var(--main-text);">Vaciar Tabla de Leads</h4>
+                        <p class="text-sm" style="color: var(--main-text-muted);">Elimina todos los datos migrados de Excel</p>
+                    </div>
+
+                    <form hx-post="/lead-limpiar" 
+                        hx-target="#resultado-eliminacion"
+                        hx-confirm="¿Estás absolutamente seguro? Esta acción eliminará TODOS los leads."
+                        hx-indicator="#loading-spinner-delete">
+                        
+                        <button type="submit" 
+                                class="px-8 py-3 rounded-xl font-semibold text-white transition-all bg-red-600 hover:bg-red-700 shadow-md active:scale-95 flex items-center gap-2">
+                            Confirmar Eliminación Total
+                        </button>
+                    </form>
+
+                    <div id="loading-spinner-delete" class="htmx-indicator flex items-center gap-2 text-sm" style="color: var(--main-text-muted);">
+                        <svg class="animate-spin h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Eliminando registros...
+                    </div>
+                </div>
+
+                <div id="resultado-eliminacion" class="mt-8"></div>
+            </div>
+            
+        </div>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+<div class="animate-fade-in-up delay-1">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold" style="font-family: 'Space Grotesk', sans-serif; color: var(--main-text);">Migración de Datos</h2>
+        <p class="text-sm" style="color: var(--main-text-muted);">Carga masiva de leads desde archivos Excel (Bimbolín / Che Roga)</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1 space-y-4">
+            <div class="card p-5">
+                <h3 class="text-sm font-semibold mb-3 flex items-center gap-2" style="color: var(--accent-primary);">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Instrucciones
+                </h3>
+                <ul class="text-xs space-y-3" style="color: var(--main-text-secondary);">
+                    <li class="flex gap-2">
+                        <span class="font-bold text-blue-500">1.</span>
+                        <span>Asegúrese de que el archivo sea formato <strong>.xlsx</strong> o <strong>.xls</strong>.</span>
+                    </li>
+                    <li class="flex gap-2">
+                        <span class="font-bold text-blue-500">2.</span>
+                        <span>La primera fila debe contener los encabezados de columna.</span>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div class="card p-8">
+                <form hx-post="/lead-migrar-ejecutar" 
+                      hx-target="#resultado-migracion" 
+                      hx-encoding="multipart/form-data"
+                      hx-indicator="#loading-spinner"
+                      class="space-y-6">
+                    
+                    <div class="relative group">
+                        <input type="file" name="excel_file" id="excel_file" class="hidden" accept=".xlsx, .xls" required 
+                               onchange="document.getElementById('file-name').textContent = this.files[0].name">
+                        
+                        <label for="excel_file" 
+                               class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 group-hover:bg-gray-50"
+                               style="border-color: var(--main-border); background: rgba(240, 244, 248, 0.5);">
+                            
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <div class="w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-transform group-hover:scale-110" 
+                                     style="background: rgba(37, 99, 235, 0.1);">
+                                    <svg class="w-7 h-7" style="color: var(--accent-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                    </svg>
+                                </div>
+                                <p class="mb-2 text-sm" style="color: var(--main-text);"><span class="font-semibold">Haga clic para cargar</span> o arrastre el archivo</p>
+                                <p id="file-name" class="text-xs font-medium" style="color: var(--accent-primary);">Ningún archivo seleccionado</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-4">
+                        <div id="loading-spinner" class="htmx-indicator flex items-center gap-2 text-sm" style="color: var(--main-text-muted);">
+                            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Procesando datos...
+                        </div>
+                        
+                        <button type="submit" 
+                                class="ml-auto px-6 py-3 rounded-xl font-semibold text-white transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                                style="background: var(--sidebar-bg); border: 1px solid var(--sidebar-border);">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                            </svg>
+                            Ejecutar Migración
+                        </button>
+                    </div>
+                </form>
+
+                <div id="resultado-migracion" class="mt-8"></div>
+            </div>
+        </div>
+    </div>
+</div>

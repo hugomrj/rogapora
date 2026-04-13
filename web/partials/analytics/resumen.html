@@ -1,0 +1,62 @@
+<div class="animate-fade-in p-6 space-y-8 max-w-7xl mx-auto">
+    <div class="mb-4">
+        <h2 class="text-3xl font-bold tracking-tight" style="color: #1e3a8a;">Resumen Ejecutivo</h2>
+        <p class="text-sm italic text-gray-500 mt-1 border-b pb-4 border-gray-200">
+            Indicadores clave de desempeño · Base de datos CRM completa
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="bg-white p-10 rounded-sm shadow-sm border-t-4 border-slate-900 flex flex-col items-center justify-center text-center">
+            <span class="text-6xl font-black text-slate-800 mb-4">{{ stats.total_contactos }}</span>
+            <span class="text-[12px] uppercase tracking-widest text-gray-500 font-bold leading-tight">Total contactos registrados</span>
+        </div>
+
+        <div class="bg-white p-10 rounded-sm shadow-sm border-t-4 border-red-500 flex flex-col items-center justify-center text-center">
+            <span class="text-6xl font-black text-red-500 mb-4">{{ stats.sin_respuesta_pct }}</span>
+            <span class="text-[12px] uppercase tracking-widest text-gray-500 font-bold leading-tight">Sin ninguna respuesta</span>
+        </div>
+
+        <div class="bg-white p-10 rounded-sm shadow-sm border-t-4 border-red-400 flex flex-col items-center justify-center text-center">
+            <span class="text-6xl font-black text-red-400 mb-4">{{ stats.conversion_pct }}</span>
+            <span class="text-[12px] uppercase tracking-widest text-gray-500 font-bold leading-tight">Tasa de conversión efectiva</span>
+        </div>
+
+        <div class="bg-white p-10 rounded-sm shadow-sm border-t-4 border-orange-300 flex flex-col items-center justify-center text-center">
+            <span class="text-6xl font-black text-orange-300 mb-4">{{ stats.caida_leads }}</span>
+            <span class="text-[12px] uppercase tracking-widest text-gray-500 font-bold leading-tight">Caída de leads Ene→Abr</span>
+        </div>
+
+        <div class="bg-white p-10 rounded-sm shadow-sm border-t-4 border-teal-400 flex flex-col items-center justify-center text-center">
+            <span class="text-6xl font-black text-teal-400 mb-4">{{ stats.en_seguimiento }}</span>
+            <span class="text-[12px] uppercase tracking-widest text-gray-500 font-bold leading-tight">Clientes en seguimiento</span>
+        </div>
+
+        <div class="bg-white p-10 rounded-sm shadow-sm border-t-4 border-teal-300 flex flex-col items-center justify-center text-center">
+            <span class="text-6xl font-black text-teal-300 mb-4">{{ stats.interes_confirmado }}</span>
+            <span class="text-[12px] uppercase tracking-widest text-gray-500 font-bold leading-tight">Interés activo confirmado</span>
+        </div>
+
+        <div class="bg-white p-10 rounded-sm shadow-sm border-t-4 border-orange-400 flex flex-col items-center justify-center text-center">
+            <span class="text-6xl font-black text-orange-400 mb-4">{{ stats.pendientes_reconectar }}</span>
+            <span class="text-[12px] uppercase tracking-widest text-gray-500 font-bold leading-tight">Pendientes de reconectar</span>
+        </div>
+
+        <div class="bg-white p-10 rounded-sm shadow-sm border-t-4 border-blue-900 flex flex-col items-center justify-center text-center">
+            <span class="text-6xl font-black text-slate-800 mb-4">{{ stats.desde_espana }}</span>
+            <span class="text-[12px] uppercase tracking-widest text-gray-500 font-bold leading-tight">Contactos desde España</span>
+        </div>
+    </div>
+
+    <div class="mt-12 pt-6">
+        <h3 class="font-bold text-red-600 uppercase mb-3">Conclusión Principal</h3>
+        <p class="text-l text-gray-700 italic leading-relaxed">
+            De <span class="font-bold border-b-2 border-gray-300">{{ stats.total_contactos }}</span> 
+            contactos, <span class="font-bold border-b-2 border-gray-300">
+            {{ stats.interes_confirmado }}</span> tienen interés activo confirmado con una conversión del 
+            <span class="font-bold border-b-2 border-gray-300">{{ stats.conversion_pct }}                
+            </span>
+        </p>
+    </div>
+</div>
