@@ -52,3 +52,24 @@ async def analitica_resumen_view(request):
         name="partials/analytics/resumen.html", 
         context={"stats": stats}
     )
+
+
+#  paginas publicas
+# routes.py o donde tengas tus rutas
+
+@custom_route(router, "/public/precalificacion")
+async def precalificacion_view(request):
+    # Capturar parámetros de origen desde la URL
+    # Ejemplo: /public/precalificacion?origen=instagram&campana=verano2024
+    origen = request.query_params.get('origen', 'desconocido')
+    campana = request.query_params.get('campana', 'organico')
+    
+    return templates.TemplateResponse(
+        request=request, 
+        name="public/precalificacion.html",
+        context={
+            "origen_contacto": origen,
+            "campana": campana,
+            "title": "Precalificación de Crédito - Che Roga Porá"
+        }
+    )
