@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precalifica tu crédito | Che Roga Porá</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Space Grotesk', sans-serif; margin: 0; box-sizing: border-box; }
+        body { background: #0a0b0f; color: #d4d4d8; min-height: 100vh; }
+
+        /* ── Inputs ── */
+        .fi {
+            width: 100%; padding: 13px 16px;
+            background: #13141a; border: 1px solid #1f2130;
+            border-radius: 8px; color: #e4e4e7;
+            font-size: 15px; font-weight: 500;
+            outline: none; transition: border-color 0.2s;
+        }
+        .fi::placeholder { color: #3f3f46; }
+        .fi:hover { border-color: #2a2c3a; }
+        .fi:focus { border-color: #c9a84c; }
+
+        select.fi {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2352525b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+            -webkit-appearance: none; appearance: none;
+        }
+        select.fi option { background: #13141a; color: #e4e4e7; }
+
+        .fl {
+            display: block; font-size: 11px; font-weight: 600;
+            color: #71717a; text-transform: uppercase;
+            letter-spacing: 0.08em; margin-bottom: 6px;
+        }
+
+        /* ── Pill toggles ── */
+        .ptoggle { cursor: pointer; }
+        .ptoggle input { display: none; }
+        .ptoggle .pf {
+            padding: 11px 16px; border-radius: 8px;
+            border: 1px solid #1f2130; background: #13141a;
+            font-size: 13px; font-weight: 500; color: #71717a;
+            transition: all 0.15s; text-align: center;
+        }
+        .ptoggle .pf:hover { border-color: #2a2c3a; color: #a1a1aa; }
+        .ptoggle input:checked + .pf {
+            border-color: #c9a84c; color: #c9a84c;
+            background: rgba(201,168,76,0.06);
+        }
+
+        /* ── Toggle Sí/No ── */
+        .tgroup { display: flex; border: 1px solid #1f2130; border-radius: 8px; overflow: hidden; }
+        .tgroup button {
+            flex: 1; padding: 11px; font-size: 13px; font-weight: 600;
+            border: none; background: #13141a; color: #52525b;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .tgroup button:hover { color: #a1a1aa; }
+        .tgroup button.on-no { background: #0d1f12; color: #4ade80; }
+        .tgroup button.on-si { background: #1f0d0d; color: #f87171; }
+
+        /* ── Secciones ── */
+        .fs { display: none; }
+        .fs.active { display: block; animation: fsIn 0.25s ease-out; }
+        @keyframes fsIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        @media (prefers-reduced-motion: reduce) { .fs.active { animation: none; } }
+
+        /* ── Stepper ── */
+        .sd {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700;
+            border: 1px solid #1f2130; color: #3f3f46;
+            background: #0a0b0f; flex-shrink: 0;
+            transition: all 0.25s;
+        }
+        .sd.active { border-color: #c9a84c; color: #c9a84c; box-shadow: 0 0 0 3px rgba(201,168,76,0.1); }
+        .sd.done { border-color: #27272a; color: #27272a; background: #27272a; }
+        .sl { flex: 1; height: 1px; background: #1f2130; }
+        .sl.filled { background: #27272a; }
+
+        /* ── Card ── */
+        .card { background: #111218; border: 1px solid #1a1b24; border-radius: 12px; padding: 24px; }
+
+        /* ── Número grande ── */
+        .bignum { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #1a1b24; border: 1px solid #27272a; color: #e4e4e7;
+            padding: 12px 24px; border-radius: 10px;
+            font-size: 13px; font-weight: 500;
+            z-index: 200; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+            white-space: nowrap;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ── Moneda prefix ── */
+        .cpref { position: relative; }
+        .cpref span {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            font-size: 12px; font-weight: 600; color: #3f3f46; pointer-events: none;
+        }
+        .cpref .fi { padding-left: 46px; font-variant-numeric: tabular-nums; }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1f2130; border-radius: 2px; }
+    </style>
+</head>
+<body class="pb-28">
+
+<div class="toast" id="toast"></div>
+
+<!-- Header -->
+<header class="sticky top-0 z-50 border-b border-[#1a1b24]" style="background:rgba(10,11,15,0.92);backdrop-filter:blur(12px)">
+    <div class="max-w-lg mx-auto px-5 pt-4 pb-3">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <p class="text-[10px] font-semibold tracking-widest uppercase text-[#3f3f46]">Che Roga Porá</p>
+                <p class="text-sm font-semibold text-[#a1a1aa] mt-0.5">Precalificación de crédito</p>
+            </div>
+            <p class="text-sm font-medium text-[#52525b]"><span id="stepNum" class="text-[#c9a84c]">1</span><span class="text-[#27272a]"> / 7</span></p>
+        </div>
+        <!-- Stepper -->
+        <div class="flex items-center" id="stepper">
+            <div class="sd active" data-s="0">1</div>
+            <div class="sl" data-l="0"></div>
+            <div class="sd" data-s="1">2</div>
+            <div class="sl" data-l="1"></div>
+            <div class="sd" data-s="2">3</div>
+            <div class="sl" data-l="2"></div>
+            <div class="sd" data-s="3">4</div>
+            <div class="sl" data-l="3"></div>
+            <div class="sd" data-s="4">5</div>
+            <div class="sl" data-l="4"></div>
+            <div class="sd" data-s="5">6</div>
+            <div class="sl" data-l="5"></div>
+            <div class="sd" data-s="6">7</div>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-lg mx-auto px-5 pt-7">
+<form id="form" novalidate>
+
+    <!-- 0: Datos Personales -->
+    <div class="fs active" data-sec="0">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-[#c9a84c] mb-2">Paso 1</p>
+        <h2 class="text-xl font-bold text-[#e4e4e7] mb-1">Datos personales</h2>
+        <p class="text-sm text-[#52525b] mb-7 leading-relaxed">Información básica para identificar tu perfil.</p>
+
+        <div class="space-y-5">
+            <div>
+                <label class="fl">Nombre completo</label>
+                <input type="text" name="nombre" class="fi" placeholder="Juan Pérez González" required>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="fl">Cédula</label>
+                    <input type="text" name="cedula" class="fi" placeholder="1234567" inputmode="numeric" required>
+                </div>
+                <div>
+                    <label class="fl">Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" id="fechaNac" class="fi" required>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="fl">Email</label>
+                    <input type="email" name="email" class="fi" placeholder="correo@email.com" inputmode="email" required>
+                </div>
+                <div>
+                    <label class="fl">WhatsApp</label>
+                    <input type="tel" name="telefono" class="fi" placeholder="0981 123 456" inputmode="tel" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-6 flex items-center justify-between">
+            <p class="text-xs text-[#52525b]">Edad calculada</p>
+            <p class="text-2xl font-bold text-[#c9a84c]" id="edad">--</p>
+        </div>
+    </div>
+
+    <!-- 1: Perfil Profesional -->
+    <div class="fs" data-sec="1">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-[#c9a84c] mb-2">Paso 2</p>
+        <h2 class="text-xl font-bold text-[#e4e4e7] mb-1">Perfil profesional</h2>
+        <p class="text-sm text-[#52525b] mb-7 leading-relaxed">Formación y situación laboral actual.</p>
+
+        <div class="space-y-6">
+            <div>
+                <label class="fl">Nivel educativo</label>
+                <select name="nivel_educativo" class="fi">
+                    <option>Primaria</option>
+                    <option>Secundaria</option>
+                    <option>Técnico</option>
+                    <option selected>Universitario</option>
+                    <option>Posgrado / Maestría</option>
+                </select>
+            </div>
+            <div>
+                <label class="fl">Tipo de empleo</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="ptoggle"><input type="radio" name="tipo_empleo" value="dependiente" checked><div class="pf">Dependiente</div></label>
+                    <label class="ptoggle"><input type="radio" name="tipo_empleo" value="independiente"><div class="pf">Independiente</div></label>
+                    <label class="ptoggle"><input type="radio" name="tipo_empleo" value="emprendedor"><div class="pf">Emprendedor</div></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2: Ingresos -->
+    <div class="fs" data-sec="2">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-[#c9a84c] mb-2">Paso 3</p>
+        <h2 class="text-xl font-bold text-[#e4e4e7] mb-1">Ingresos mensuales</h2>
+        <p class="text-sm text-[#52525b] mb-7 leading-relaxed">Todos los montos en guaraníes (Gs).</p>
+
+        <div class="space-y-5">
+            <div class="cpref">
+                <label class="fl">Ingreso principal</label>
+                <span>Gs.</span>
+                <input type="number" id="ingresoPrincipal" name="ingreso_principal" class="fi" placeholder="5.000.000" inputmode="numeric">
+            </div>
+            <div class="cpref">
+                <label class="fl">Ingresos extras <span class="normal-case tracking-normal text-[#27272a]">(opcional)</span></label>
+                <span>Gs.</span>
+                <input type="number" id="ingresoAdicional" name="ingreso_adicional" class="fi" placeholder="0" inputmode="numeric">
+            </div>
+            <div class="cpref">
+                <label class="fl">Ingreso de pareja <span class="normal-case tracking-normal text-[#27272a]">(opcional)</span></label>
+                <span>Gs.</span>
+                <input type="number" id="ingresoPareja" name="ingreso_pareja" class="fi" placeholder="0" inputmode="numeric">
+            </div>
+        </div>
+
+        <div class="card mt-6">
+            <p class="text-[10px] font-semibold uppercase tracking-widest text-[#3f3f46] mb-1">Total familiar</p>
+            <p class="bignum text-[#c9a84c]" id="totalIngresosDisplay">Gs. 0</p>
+        </div>
+    </div>
+
+    <!-- 3: Gastos -->
+    <div class="fs" data-sec="3">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-[#c9a84c] mb-2">Paso 4</p>
+        <h2 class="text-xl font-bold text-[#e4e4e7] mb-1">Gastos fijos</h2>
+        <p class="text-sm text-[#52525b] mb-7 leading-relaxed">Solo compromisos mensuales recurrentes.</p>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="cpref"><label class="fl">Alquiler</label><span>Gs.</span><input type="number" name="gasto_alquiler" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Servicios</label><span>Gs.</span><input type="number" name="gasto_servicios" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Alimentación</label><span>Gs.</span><input type="number" name="gasto_alimentacion" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Salud</label><span>Gs.</span><input type="number" name="gasto_salud" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+        </div>
+
+        <div class="card mt-6">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs text-[#52525b]">Capacidad de ahorro</p>
+                <p class="text-lg font-bold" id="capacidadPago" style="color:#3f3f46">0%</p>
+            </div>
+            <div class="h-1 rounded-full bg-[#1f2130] overflow-hidden">
+                <div id="capacidadBar" class="h-full rounded-full transition-all duration-400" style="width:0%;background:#1f2130"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4: Deudas -->
+    <div class="fs" data-sec="4">
+        <div class="flex items-end justify-between mb-7">
+            <div>
+                <p class="text-[11px] font-semibold uppercase tracking-widest text-[#c9a84c] mb-2">Paso 5</p>
+                <h2 class="text-xl font-bold text-[#e4e4e7] mb-1">Deudas actuales</h2>
+                <p class="text-sm text-[#52525b] leading-relaxed">Préstamos o tarjetas activas.</p>
+            </div>
+            <button type="button" id="addDeuda" class="w-9 h-9 rounded-lg border border-[#1f2130] flex items-center justify-center text-[#52525b] hover:text-[#c9a84c] hover:border-[#c9a84c] transition-colors flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            </button>
+        </div>
+
+        <div id="deudasBox" class="space-y-3">
+            <div id="deudasEmpty" class="py-10 text-center">
+                <p class="text-sm text-[#27272a]">Sin deudas registradas</p>
+                <p class="text-xs text-[#1f2130] mt-1">Tocá + para agregar</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5: Buró -->
+    <div class="fs" data-sec="5">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-[#c9a84c] mb-2">Paso 6</p>
+        <h2 class="text-xl font-bold text-[#e4e4e7] mb-1">Historial crediticio</h2>
+        <p class="text-sm text-[#52525b] mb-7 leading-relaxed">Verificación de antecedentes financieros.</p>
+
+        <div class="space-y-4">
+            <div class="card">
+                <p class="text-sm font-medium text-[#a1a1aa] mb-1">¿Figuras en Informconf?</p>
+                <p class="text-xs text-[#3f3f46] mb-3">Registro de deudores del sistema financiero</p>
+                <div class="tgroup" data-name="informconf">
+                    <button type="button" class="on-no" data-v="false">No</button>
+                    <button type="button" data-v="true">Sí</button>
+                </div>
+            </div>
+            <div class="card">
+                <p class="text-sm font-medium text-[#a1a1aa] mb-1">¿Atrasos mayores a 90 días?</p>
+                <p class="text-xs text-[#3f3f46] mb-3">En los últimos 12 meses</p>
+                <div class="tgroup" data-name="atrasos_90">
+                    <button type="button" class="on-no" data-v="false">No</button>
+                    <button type="button" data-v="true">Sí</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6: Vivienda -->
+    <div class="fs" data-sec="6">
+        <p class="text-[11px] font-semibold uppercase tracking-widest text-[#c9a84c] mb-2">Paso 7</p>
+        <h2 class="text-xl font-bold text-[#e4e4e7] mb-1">Tu propiedad</h2>
+        <p class="text-sm text-[#52525b] mb-7 leading-relaxed">Datos del inmueble que buscás.</p>
+
+        <div class="space-y-5">
+            <div>
+                <label class="fl">Ubicación preferida</label>
+                <input type="text" name="ubicacion_preferida" class="fi" placeholder="Ciudad o zona">
+            </div>
+            <div>
+                <label class="fl">Tipo de propiedad</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="ptoggle"><input type="radio" name="tipo_vivienda" value="Casa" checked><div class="pf">Casa</div></label>
+                    <label class="ptoggle"><input type="radio" name="tipo_vivienda" value="Departamento"><div class="pf">Depto</div></label>
+                    <label class="ptoggle"><input type="radio" name="tipo_vivienda" value="Duplex"><div class="pf">Duplex</div></label>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="cpref"><label class="fl">Presupuesto máximo</label><span>Gs.</span><input type="number" name="presupuesto_maximo" class="fi" placeholder="0" inputmode="numeric"></div>
+                <div class="cpref"><label class="fl">Entrega inicial</label><span>Gs.</span><input type="number" name="entrega_inicial" class="fi" placeholder="0" inputmode="numeric"></div>
+            </div>
+        </div>
+
+        <div class="mt-6 p-4 border border-[#1f2130] rounded-lg">
+            <p class="text-xs text-[#3f3f46] leading-relaxed">Al enviar, tus datos se procesan de forma segura. Recibirás una respuesta en un plazo de 24 horas hábiles.</p>
+        </div>
+    </div>
+
+</form>
+</main>
+
+<!-- Nav fija -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 border-t border-[#1a1b24]" style="background:rgba(10,11,15,0.95);backdrop-filter:blur(12px)">
+    <div class="max-w-lg mx-auto px-5 py-4 flex items-center gap-3">
+        <button type="button" id="prevBtn" class="px-4 py-3 text-sm font-medium text-[#52525b] hover:text-[#a1a1aa] transition-colors disabled:opacity-0 disabled:pointer-events-none" disabled>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button type="button" id="nextBtn" class="flex-1 py-3 text-sm font-semibold rounded-lg bg-[#c9a84c] text-[#0a0b0f] hover:bg-[#d4b35a] active:scale-[0.98] transition-all">Continuar</button>
+        <button type="submit" id="submitBtn" class="hidden flex-1 py-3 text-sm font-semibold rounded-lg bg-[#c9a84c] text-[#0a0b0f] hover:bg-[#d4b35a] active:scale-[0.98] transition-all">Enviar solicitud</button>
+    </div>
+</nav>
+
+<script>
+    const secs = document.querySelectorAll('.fs');
+    const dots = document.querySelectorAll('.sd');
+    const lines = document.querySelectorAll('.sl');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const stepNum = document.getElementById('stepNum');
+    const toastEl = document.getElementById('toast');
+    let cur = 0;
+
+    function show(i) {
+        cur = i;
+        secs.forEach((s,j) => s.classList.toggle('active', j===i));
+        dots.forEach((d,j) => {
+            d.classList.remove('active','done');
+            if (j < i) { d.classList.add('done'); d.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>'; }
+            else if (j === i) { d.classList.add('active'); d.textContent = j+1; }
+            else { d.textContent = j+1; }
+        });
+        lines.forEach((l,j) => l.classList.toggle('filled', j < i));
+        stepNum.textContent = i + 1;
+        prevBtn.disabled = i === 0;
+        nextBtn.classList.toggle('hidden', i === secs.length - 1);
+        submitBtn.classList.toggle('hidden', i !== secs.length - 1);
+        window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    nextBtn.addEventListener('click', () => {
+        const req = secs[cur].querySelectorAll('[required]');
+        let ok = true;
+        req.forEach(inp => {
+            if (!inp.value.trim()) {
+                ok = false;
+                inp.style.borderColor = '#7f1d1d';
+                inp.addEventListener('input', function h(){ inp.style.borderColor=''; inp.removeEventListener('input',h); });
+            }
+        });
+        if (!ok) { showToast('Completá los campos obligatorios'); return; }
+        if (cur < secs.length - 1) show(cur + 1);
+    });
+    prevBtn.addEventListener('click', () => { if (cur > 0) show(cur - 1); });
+
+    function showToast(m) {
+        toastEl.textContent = m;
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 2500);
+    }
+
+    // Edad
+    document.getElementById('fechaNac').addEventListener('change', function(){
+        const b = new Date(this.value), t = new Date();
+        let a = t.getFullYear() - b.getFullYear();
+        const m = t.getMonth() - b.getMonth();
+        if (m<0||(m===0&&t.getDate()<b.getDate())) a--;
+        document.getElementById('edad').textContent = (a>=0&&!isNaN(a))?a:'--';
+    });
+
+    // Cálculos
+    function calc(){
+        const ip = parseFloat(document.getElementById('ingresoPrincipal').value)||0;
+        const ia = parseFloat(document.getElementById('ingresoAdicional').value)||0;
+        const ip2 = parseFloat(document.getElementById('ingresoPareja').value)||0;
+        const total = ip+ia+ip2;
+        document.getElementById('totalIngresosDisplay').textContent = 'Gs. '+total.toLocaleString('es-PY');
+        let tg = 0;
+        document.querySelectorAll('.gasto').forEach(g=>tg+=parseFloat(g.value)||0);
+        const cap = total>0?((total-tg)/total)*100:0;
+        const el = document.getElementById('capacidadPago');
+        const bar = document.getElementById('capacidadBar');
+        el.textContent = cap.toFixed(1)+'%';
+        bar.style.width = Math.min(Math.max(cap,0),100)+'%';
+        if(cap>=30){el.style.color='#4ade80';bar.style.background='#4ade80';}
+        else if(cap>0){el.style.color='#c9a84c';bar.style.background='#c9a84c';}
+        else{el.style.color='#3f3f46';bar.style.background='#1f2130';}
+    }
+
+    // Deudas
+    document.getElementById('addDeuda').addEventListener('click',()=>{
+        const ph = document.getElementById('deudasEmpty'); if(ph) ph.remove();
+        const d = document.createElement('div');
+        d.className = 'card flex gap-3 items-start';
+        d.innerHTML = `
+            <div class="flex-1 space-y-3">
+                <input type="text" placeholder="Entidad" class="fi" style="font-size:14px">
+                <div class="cpref"><span>Gs.</span><input type="number" placeholder="Cuota mensual" class="fi" style="padding-left:46px;font-size:14px" inputmode="numeric"></div>
+            </div>
+            <button type="button" class="mt-1 p-1 text-[#27272a] hover:text-[#f87171] transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>`;
+        d.querySelector('button').addEventListener('click',()=>{d.style.opacity='0';d.style.transition='opacity 0.2s';setTimeout(()=>d.remove(),200);});
+        document.getElementById('deudasBox').appendChild(d);
+    });
+
+    // Toggles buró
+    document.querySelectorAll('.tgroup').forEach(g=>{
+        g.querySelectorAll('button').forEach(b=>{
+            b.addEventListener('click',()=>{
+                g.querySelectorAll('button').forEach(x=>x.classList.remove('on-no','on-si'));
+                b.classList.add(b.dataset.v==='false'?'on-no':'on-si');
+            });
+        });
+    });
+
+    // Submit
+    document.getElementById('form').addEventListener('submit',e=>{
+        e.preventDefault();
+        showToast('Solicitud enviada correctamente');
+        submitBtn.textContent = 'Enviado';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+    });
+
+    document.addEventListener('input',e=>{if(e.target.matches('input'))calc();});
+    show(0);
+</script>
+</body>
+</html>
