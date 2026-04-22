@@ -40,12 +40,12 @@ pip install -r requirements.txt
 4. Configurar variables de entorno
 
 Crear un archivo .env en la raíz del proyecto:
-
+```
 DB_NAME=rogapora_database
 DB_USER=postgres
 DB_PASSWORD=tu_password
 DB_HOST=localhost
-
+```
 Agregar .env al .gitignore.
 
 5. Inicializar la base de datos

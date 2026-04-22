@@ -7,6 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-blue: #1B365D;
+            --accent-orange: #D98324;
+        }
+
         * { font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: #f7f7f6; color: #1c1917; }
 
@@ -20,7 +25,7 @@
         }
         .fi::placeholder { color: #a1a1aa; }
         .fi:hover { border-color: #d4d4d8; }
-        .fi:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.08); }
+        .fi:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(27,54,93,0.1); }
 
         select.fi {
             cursor: pointer;
@@ -49,8 +54,8 @@
         }
         .pill .pf:hover { border-color: #d4d4d8; color: #3f3f46; }
         .pill input:checked + .pf {
-            border-color: #0f766e; color: #0f766e;
-            background: #f0fdfa;
+            border-color: var(--primary-blue); color: var(--primary-blue);
+            background: #f0f4f8;
         }
 
         /* ── Toggle Sí/No ── */
@@ -79,10 +84,10 @@
             background: #f7f7f6; flex-shrink: 0;
             transition: all 0.25s;
         }
-        .sdot.active { border-color: #0f766e; color: #0f766e; background: #f0fdfa; }
-        .sdot.done { border-color: #0f766e; color: #fff; background: #0f766e; }
+        .sdot.active { border-color: var(--primary-blue); color: var(--primary-blue); background: #f0f4f8; }
+        .sdot.done { border-color: var(--primary-blue); color: #fff; background: var(--primary-blue); }
         .sline { flex: 1; height: 2px; background: #e4e4e7; transition: background 0.3s; }
-        .sline.filled { background: #0f766e; }
+        .sline.filled { background: var(--primary-blue); }
 
         /* ── Card ── */
         .card { background: #fff; border: 1.5px solid #e4e4e7; border-radius: 14px; padding: 20px; }
@@ -98,7 +103,7 @@
         /* ── Toast ── */
         .toast {
             position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: #1c1917; color: #fafafa;
+            background: var(--primary-blue); color: #fafafa;
             padding: 12px 24px; border-radius: 10px;
             font-size: 13px; font-weight: 600;
             z-index: 200; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
@@ -126,7 +131,7 @@
             </div>
             <div class="text-right">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-[#a1a1aa]">Paso</p>
-                <p class="text-base font-bold text-[#0f766e]"><span id="stepNum">1</span><span class="text-[#d4d4d8] font-normal">/7</span></p>
+                <p class="text-base font-bold text-[#D98324]"><span id="stepNum">1</span><span class="text-[#d4d4d8] font-normal">/7</span></p>
             </div>
         </div>
         <div class="flex items-center" id="stepper">
@@ -153,7 +158,7 @@
     <!-- 0: Datos Personales -->
     <div class="fs active" data-sec="0">
         <div class="mb-7">
-            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 1 de 7</p>
+            <p class="text-xs font-bold text-[#D98324] mb-1.5">Paso 1 de 7</p>
             <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Datos personales</h2>
             <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Información básica para identificar tu perfil crediticio.</p>
         </div>
@@ -170,14 +175,14 @@
         </div>
         <div class="card mt-6 flex items-center justify-between">
             <p class="text-sm font-medium text-[#52525b]">Edad calculada</p>
-            <p class="text-2xl font-extrabold text-[#0f766e]" id="edad">--</p>
+            <p class="text-2xl font-extrabold text-[#D98324]" id="edad">--</p>
         </div>
     </div>
 
     <!-- 1: Perfil Profesional -->
     <div class="fs" data-sec="1">
         <div class="mb-7">
-            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 2 de 7</p>
+            <p class="text-xs font-bold text-[#D98324] mb-1.5">Paso 2 de 7</p>
             <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Perfil profesional</h2>
             <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Formación académica y situación laboral.</p>
         </div>
@@ -201,7 +206,7 @@
     <!-- 2: Ingresos -->
     <div class="fs" data-sec="2">
         <div class="mb-7">
-            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 3 de 7</p>
+            <p class="text-xs font-bold text-[#D98324] mb-1.5">Paso 3 de 7</p>
             <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Ingresos mensuales</h2>
             <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Todos los montos en guaraníes.</p>
         </div>
@@ -212,14 +217,14 @@
         </div>
         <div class="card mt-6">
             <p class="text-[11px] font-bold uppercase tracking-wider text-[#a1a1aa] mb-1">Total familiar</p>
-            <p class="text-2xl font-extrabold text-[#1c1917] tabular-nums" id="totalIngresosDisplay">Gs. 0</p>
+            <p class="text-2xl font-extrabold text-[#1B365D] tabular-nums" id="totalIngresosDisplay">Gs. 0</p>
         </div>
     </div>
 
     <!-- 3: Gastos -->
     <div class="fs" data-sec="3">
         <div class="mb-7">
-            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 4 de 7</p>
+            <p class="text-xs font-bold text-[#D98324] mb-1.5">Paso 4 de 7</p>
             <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Gastos fijos</h2>
             <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Solo compromisos mensuales recurrentes.</p>
         </div>
@@ -244,11 +249,11 @@
     <div class="fs" data-sec="4">
         <div class="flex items-end justify-between mb-7">
             <div>
-                <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 5 de 7</p>
+                <p class="text-xs font-bold text-[#D98324] mb-1.5">Paso 5 de 7</p>
                 <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Deudas actuales</h2>
                 <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Préstamos o tarjetas que estés pagando.</p>
             </div>
-            <button type="button" id="addDeuda" class="w-10 h-10 rounded-xl border-2 border-[#e4e4e7] bg-white flex items-center justify-center text-[#71717a] hover:border-[#0f766e] hover:text-[#0f766e] transition-colors flex-shrink-0 active:scale-95">
+            <button type="button" id="addDeuda" class="w-10 h-10 rounded-xl border-2 border-[#e4e4e7] bg-white flex items-center justify-center text-[#71717a] hover:border-[#D98324] hover:text-[#D98324] transition-colors flex-shrink-0 active:scale-95">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             </button>
         </div>
@@ -263,7 +268,7 @@
     <!-- 5: Buró -->
     <div class="fs" data-sec="5">
         <div class="mb-7">
-            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 6 de 7</p>
+            <p class="text-xs font-bold text-[#D98324] mb-1.5">Paso 6 de 7</p>
             <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Historial crediticio</h2>
             <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Verificación de antecedentes financieros.</p>
         </div>
@@ -290,7 +295,7 @@
     <!-- 6: Vivienda -->
     <div class="fs" data-sec="6">
         <div class="mb-7">
-            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 7 de 7</p>
+            <p class="text-xs font-bold text-[#D98324] mb-1.5">Paso 7 de 7</p>
             <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Tu propiedad ideal</h2>
             <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Datos del inmueble que buscás financiar.</p>
         </div>
@@ -309,8 +314,8 @@
                 <div class="cpref"><label class="fl">Entrega inicial</label><span>Gs.</span><input type="number" name="entrega_inicial" class="fi" placeholder="0" inputmode="numeric"></div>
             </div>
         </div>
-        <div class="mt-6 p-4 bg-[#f0fdfa] border border-[#ccfbf1] rounded-xl">
-            <p class="text-xs text-[#0f766e] leading-relaxed">Tus datos se procesan de forma segura y confidencial. Recibirás una respuesta en un plazo de 24 horas hábiles.</p>
+        <div class="mt-6 p-4 bg-[#f0f4f8] border border-[#dde4ed] rounded-xl">
+            <p class="text-xs text-[#1B365D] leading-relaxed">Tus datos se procesan de forma segura y confidencial. Recibirás una respuesta en un plazo de 24 horas hábiles.</p>
         </div>
     </div>
 
@@ -323,8 +328,8 @@
         <button type="button" id="prevBtn" class="w-11 h-11 rounded-xl border-2 border-[#e4e4e7] bg-white flex items-center justify-center text-[#71717a] hover:border-[#d4d4d8] transition-colors disabled:opacity-0 disabled:pointer-events-none active:scale-95" disabled>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </button>
-        <button type="button" id="nextBtn" class="flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#1c1917] text-white hover:bg-[#292524] active:scale-[0.98] transition-all">Continuar</button>
-        <button type="submit" id="submitBtn" class="hidden flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#0f766e] text-white hover:bg-[#115e59] active:scale-[0.98] transition-all">Enviar solicitud</button>
+        <button type="button" id="nextBtn" class="flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#1B365D] text-white hover:bg-[#152a47] active:scale-[0.98] transition-all">Continuar</button>
+        <button type="submit" id="submitBtn" class="hidden flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#D98324] text-white hover:bg-[#c27620] active:scale-[0.98] transition-all">Enviar solicitud</button>
     </div>
 </nav>
 
@@ -412,7 +417,7 @@
         el.textContent = cap.toFixed(1) + '%';
         bar.style.width = Math.min(Math.max(cap, 0), 100) + '%';
         if (cap >= 30) { el.style.color = '#16a34a'; bar.style.background = '#16a34a'; }
-        else if (cap > 0) { el.style.color = '#0f766e'; bar.style.background = '#0f766e'; }
+        else if (cap > 0) { el.style.color = '#1B365D'; bar.style.background = '#1B365D'; }
         else { el.style.color = '#a1a1aa'; bar.style.background = '#e4e4e7'; }
     }
 
