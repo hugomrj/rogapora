@@ -5,851 +5,458 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Precalifica tu crédito | Che Roga Porá</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --accent: #b8693e;
-            --accent-light: #e8a97a;
-            --accent-glow: rgba(184, 105, 62, 0.15);
-            --sage: #6b7f5e;
-            --sage-light: #a8b89e;
-            --cream: #faf6f1;
-            --warm-dark: #2c2420;
-            --warm-mid: #5c4f47;
-            --warm-muted: #8a7b72;
-            --warm-border: #e5ddd5;
-        }
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f7f7f6; color: #1c1917; }
 
-        * { font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
-        body { background: var(--cream); overflow-x: hidden; }
+        /* ── Inputs ── */
+        .fi {
+            width: 100%; padding: 13px 16px;
+            background: #fff; border: 1.5px solid #e4e4e7;
+            border-radius: 10px; color: #1c1917;
+            font-size: 15px; font-weight: 500;
+            outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .fi::placeholder { color: #a1a1aa; }
+        .fi:hover { border-color: #d4d4d8; }
+        .fi:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.08); }
 
-        .font-display { font-family: 'Playfair Display', serif; }
-
-        /* ── Fondo animado por sección ── */
-        .scene-bg {
-            position: fixed; inset: 0; z-index: 0;
-            transition: opacity 0.8s ease;
-            pointer-events: none;
-        }
-        .scene-bg .blob {
-            position: absolute; border-radius: 50%; filter: blur(80px);
-            animation: blobFloat 12s ease-in-out infinite alternate;
-        }
-        .scene-bg .blob:nth-child(2) { animation-delay: -4s; animation-duration: 15s; }
-        .scene-bg .blob:nth-child(3) { animation-delay: -8s; animation-duration: 18s; }
-
-        @keyframes blobFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -20px) scale(1.1); }
-            66% { transform: translate(-20px, 15px) scale(0.95); }
-            100% { transform: translate(10px, -10px) scale(1.05); }
-        }
-
-        /* ── Stepper de camino ── */
-        .step-dot {
-            width: 36px; height: 36px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 13px; font-weight: 700;
-            border: 2.5px solid var(--warm-border);
-            color: var(--warm-muted);
-            background: var(--cream);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            flex-shrink: 0;
-            position: relative; z-index: 2;
-        }
-        .step-dot.active {
-            border-color: var(--accent);
-            color: #fff;
-            background: var(--accent);
-            transform: scale(1.15);
-            box-shadow: 0 0 0 6px var(--accent-glow), 0 4px 12px rgba(184,105,62,0.25);
-        }
-        .step-dot.done {
-            border-color: var(--sage);
-            color: #fff;
-            background: var(--sage);
-        }
-        .step-line {
-            flex: 1; height: 2.5px; background: var(--warm-border);
-            border-radius: 2px; overflow: hidden; margin: 0 -2px;
-            position: relative; z-index: 1;
-        }
-        .step-line .fill {
-            height: 100%; background: var(--sage); border-radius: 2px;
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 0%;
-        }
-        .step-line.filled .fill { width: 100%; }
-
-        /* ── Inputs underline ── */
-        .field-group { position: relative; }
-        .field-group label {
-            display: block; font-size: 11px; font-weight: 700;
-            color: var(--warm-muted); text-transform: uppercase;
-            letter-spacing: 0.1em; margin-bottom: 6px; padding-left: 2px;
-        }
-        .field-input {
-            width: 100%; padding: 14px 0 14px 2px;
-            border: none; border-bottom: 2.5px solid var(--warm-border);
-            background: transparent; font-size: 17px; font-weight: 500;
-            color: var(--warm-dark); outline: none;
-            transition: border-color 0.25s;
-            border-radius: 0;
-        }
-        .field-input::placeholder { color: #c4b8ae; font-weight: 400; }
-        .field-input:hover { border-color: #c4b8ae; }
-        .field-input:focus { border-color: var(--accent); }
-        .field-input:focus + .field-line {
-            transform: scaleX(1);
-        }
-        .field-line {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            height: 2.5px; background: var(--accent);
-            transform: scaleX(0); transform-origin: left;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 2px;
-        }
-
-        /* Selects */
-        select.field-input {
+        select.fi {
             cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238a7b72'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 4px center;
-            background-size: 18px;
-            padding-right: 32px;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 42px;
             -webkit-appearance: none; appearance: none;
         }
-        select.field-input option { background: var(--cream); color: var(--warm-dark); }
+        select.fi option { background: #fff; }
 
-        /* ── Pill toggles ── */
-        .pill-option { cursor: pointer; }
-        .pill-option input { display: none; }
-        .pill-option .pill-face {
-            padding: 12px 18px; border-radius: 14px;
-            border: 2px solid var(--warm-border); background: transparent;
-            font-size: 14px; font-weight: 600; color: var(--warm-mid);
-            transition: all 0.25s; text-align: center;
+        .fl {
+            display: block; font-size: 12px; font-weight: 700;
+            color: #52525b; margin-bottom: 6px;
         }
-        .pill-option .pill-face:hover { border-color: #c4b8ae; }
-        .pill-option input:checked + .pill-face {
-            border-color: var(--accent); color: var(--accent);
-            background: var(--accent-glow);
-            box-shadow: 0 0 0 4px var(--accent-glow);
+
+        /* ── Pills ── */
+        .pill { cursor: pointer; }
+        .pill input { display: none; }
+        .pill .pf {
+            padding: 11px 14px; border-radius: 10px;
+            border: 1.5px solid #e4e4e7; background: #fff;
+            font-size: 13px; font-weight: 600; color: #71717a;
+            transition: all 0.15s; text-align: center;
         }
+        .pill .pf:hover { border-color: #d4d4d8; color: #3f3f46; }
+        .pill input:checked + .pf {
+            border-color: #0f766e; color: #0f766e;
+            background: #f0fdfa;
+        }
+
+        /* ── Toggle Sí/No ── */
+        .tg { display: flex; border: 1.5px solid #e4e4e7; border-radius: 10px; overflow: hidden; background: #fff; }
+        .tg button {
+            flex: 1; padding: 12px; font-size: 13px; font-weight: 600;
+            border: none; background: transparent; color: #a1a1aa;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .tg button:hover { color: #71717a; }
+        .tg button.on-no { background: #f0fdf4; color: #16a34a; }
+        .tg button.on-si { background: #fef2f2; color: #dc2626; }
 
         /* ── Secciones ── */
-        .form-section {
-            display: none; opacity: 0;
-        }
-        .form-section.active {
-            display: block;
-            animation: fadeSlideUp 0.45s ease-out forwards;
-        }
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .fs { display: none; }
+        .fs.active { display: block; animation: fsIn 0.3s ease-out; }
+        @keyframes fsIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        @media (prefers-reduced-motion: reduce) { .fs.active { animation: none; } }
 
-        @media (prefers-reduced-motion: reduce) {
-            .form-section.active { animation: none; opacity: 1; }
-            .scene-bg .blob { animation: none; }
-            .step-dot { transition: none; }
+        /* ── Stepper ── */
+        .sdot {
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+            border: 2px solid #e4e4e7; color: #a1a1aa;
+            background: #f7f7f6; flex-shrink: 0;
+            transition: all 0.25s;
         }
+        .sdot.active { border-color: #0f766e; color: #0f766e; background: #f0fdfa; }
+        .sdot.done { border-color: #0f766e; color: #fff; background: #0f766e; }
+        .sline { flex: 1; height: 2px; background: #e4e4e7; transition: background 0.3s; }
+        .sline.filled { background: #0f766e; }
 
-        /* ── Info card ── */
-        .info-card {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(229,221,213,0.6);
-            border-radius: 20px; padding: 20px 24px;
-        }
+        /* ── Card ── */
+        .card { background: #fff; border: 1.5px solid #e4e4e7; border-radius: 14px; padding: 20px; }
 
-        /* ── Deuda row ── */
-        .deuda-row {
-            animation: fadeSlideUp 0.3s ease-out;
+        /* ── Moneda ── */
+        .cpref { position: relative; }
+        .cpref span {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            font-size: 12px; font-weight: 700; color: #a1a1aa; pointer-events: none;
         }
-
-        /* ── Toggle select ── */
-        .toggle-select {
-            display: flex; gap: 0; border-radius: 14px; overflow: hidden;
-            border: 2px solid var(--warm-border);
-        }
-        .toggle-select button {
-            flex: 1; padding: 12px 16px; font-size: 14px; font-weight: 600;
-            border: none; background: transparent; color: var(--warm-muted);
-            cursor: pointer; transition: all 0.25s;
-        }
-        .toggle-select button:hover { background: rgba(0,0,0,0.02); }
-        .toggle-select button.selected-no {
-            background: #e8f5e9; color: #2e7d32;
-        }
-        .toggle-select button.selected-si {
-            background: #fce4ec; color: #c62828;
-        }
-
-        /* ── Botones ── */
-        .btn-primary {
-            background: var(--accent); color: #fff;
-            padding: 16px 32px; border-radius: 16px;
-            font-size: 15px; font-weight: 700; border: none;
-            cursor: pointer; transition: all 0.25s;
-            box-shadow: 0 4px 20px rgba(184,105,62,0.3);
-        }
-        .btn-primary:hover { background: #a05c33; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(184,105,62,0.35); }
-        .btn-primary:active { transform: scale(0.98) translateY(0); }
-
-        .btn-ghost {
-            background: transparent; color: var(--warm-muted);
-            padding: 16px 24px; border-radius: 16px;
-            font-size: 15px; font-weight: 600; border: none;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .btn-ghost:hover { color: var(--warm-dark); background: rgba(0,0,0,0.03); }
-
-        .btn-submit {
-            background: var(--sage); color: #fff;
-            padding: 16px 32px; border-radius: 16px;
-            font-size: 15px; font-weight: 700; border: none;
-            cursor: pointer; transition: all 0.25s;
-            box-shadow: 0 4px 20px rgba(107,127,94,0.3);
-        }
-        .btn-submit:hover { background: #5a6d4f; transform: translateY(-1px); }
-        .btn-submit:active { transform: scale(0.98) translateY(0); }
-
-        /* ── Scrollbar ── */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--warm-border); border-radius: 3px; }
-
-        /* ── Decoración de ola ── */
-        .wave-deco {
-            position: absolute; bottom: -1px; left: 0; right: 0;
-            height: 60px; overflow: hidden;
-        }
-        .wave-deco svg { position: absolute; bottom: 0; width: 100%; }
-
-        /* ── Total grande ── */
-        .big-number {
-            font-family: 'Playfair Display', serif;
-            font-weight: 800; line-height: 1;
-        }
-
-        /* ── Moneda input ── */
-        .currency-input {
-            position: relative;
-        }
-        .currency-input .prefix {
-            position: absolute; left: 2px; bottom: 14px;
-            font-size: 13px; font-weight: 700; color: var(--warm-muted);
-            pointer-events: none; letter-spacing: 0.02em;
-        }
-        .currency-input .field-input {
-            padding-left: 38px;
-        }
+        .cpref .fi { padding-left: 46px; font-variant-numeric: tabular-nums; }
 
         /* ── Toast ── */
         .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-120%);
-            background: var(--warm-dark); color: #fff;
-            padding: 14px 28px; border-radius: 14px;
-            font-size: 14px; font-weight: 600;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            z-index: 100; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            white-space: nowrap;
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #1c1917; color: #fafafa;
+            padding: 12px 24px; border-radius: 10px;
+            font-size: 13px; font-weight: 600;
+            z-index: 200; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+            white-space: nowrap; box-shadow: 0 8px 30px rgba(0,0,0,0.12);
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 3px; }
     </style>
 </head>
 <body class="min-h-screen pb-28">
 
-    <!-- Fondo animado con blobs -->
-    <div class="scene-bg" id="sceneBg">
-        <div class="blob" style="width:400px;height:400px;top:-10%;right:-5%;background:rgba(184,105,62,0.08);"></div>
-        <div class="blob" style="width:300px;height:300px;bottom:10%;left:-8%;background:rgba(107,127,94,0.07);"></div>
-        <div class="blob" style="width:250px;height:250px;top:40%;right:20%;background:rgba(232,169,122,0.06);"></div>
-    </div>
+<div class="toast" id="toast"></div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <!-- Contenido -->
-    <div class="relative z-10">
-
-        <!-- Header -->
-        <header class="sticky top-0 z-50 backdrop-blur-xl bg-[#faf6f1]/80 border-b border-[#e5ddd5]/50">
-            <div class="max-w-xl mx-auto px-5 py-4">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <p class="text-[10px] font-bold tracking-[0.15em] uppercase" style="color:var(--warm-muted)">Che Roga Porá</p>
-                        <h1 class="font-display text-xl font-bold" style="color:var(--warm-dark)">Precalificación</h1>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--warm-muted)">Paso</p>
-                        <p class="font-display text-2xl font-bold" style="color:var(--accent)" id="stepCounter">1<span class="text-base font-normal" style="color:var(--warm-muted)">/7</span></p>
-                    </div>
-                </div>
-
-                <!-- Stepper -->
-                <div class="flex items-center" id="stepper">
-                    <div class="step-dot active" data-step="0">1</div>
-                    <div class="step-line" data-line="0"><div class="fill"></div></div>
-                    <div class="step-dot" data-step="1">2</div>
-                    <div class="step-line" data-line="1"><div class="fill"></div></div>
-                    <div class="step-dot" data-step="2">3</div>
-                    <div class="step-line" data-line="2"><div class="fill"></div></div>
-                    <div class="step-dot" data-step="3">4</div>
-                    <div class="step-line" data-line="3"><div class="fill"></div></div>
-                    <div class="step-dot" data-step="4">5</div>
-                    <div class="step-line" data-line="4"><div class="fill"></div></div>
-                    <div class="step-dot" data-step="5">6</div>
-                    <div class="step-line" data-line="5"><div class="fill"></div></div>
-                    <div class="step-dot" data-step="6">7</div>
-                </div>
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-[#f7f7f6]/90 backdrop-blur-md border-b border-[#e4e4e7]">
+    <div class="max-w-lg mx-auto px-5 pt-4 pb-3">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <p class="text-[10px] font-bold tracking-widest uppercase text-[#a1a1aa]">Che Roga Porá</p>
+                <p class="text-sm font-semibold text-[#3f3f46] mt-0.5">Precalificación</p>
             </div>
-        </header>
-
-        <main class="max-w-xl mx-auto px-5 pt-8">
-
-            <form id="precalificacionForm" novalidate>
-
-                <!-- ═══ Sección 0: Datos Personales ═══ -->
-                <div class="form-section active" data-section="0">
-                    <div class="mb-8">
-                        <p class="text-xs font-bold uppercase tracking-[0.12em] mb-2" style="color:var(--accent)">Comencemos</p>
-                        <h2 class="font-display text-3xl font-bold leading-tight" style="color:var(--warm-dark)">Contanos sobre<br>vos mismo</h2>
-                        <p class="mt-3 text-sm leading-relaxed" style="color:var(--warm-muted)">Esta información es necesaria para evaluar tu perfil. Es confidencial y solo se usa para la precalificación.</p>
-                    </div>
-
-                    <div class="space-y-6">
-                        <div class="field-group">
-                            <label>Nombre completo</label>
-                            <input type="text" name="nombre" class="field-input" placeholder="Juan Pérez González" required>
-                            <div class="field-line"></div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-5">
-                            <div class="field-group">
-                                <label>Cédula</label>
-                                <input type="text" name="cedula" class="field-input" placeholder="1234567" inputmode="numeric" required>
-                                <div class="field-line"></div>
-                            </div>
-                            <div class="field-group">
-                                <label>Nacimiento</label>
-                                <input type="date" name="fecha_nacimiento" id="fechaNac" class="field-input cursor-pointer" required>
-                                <div class="field-line"></div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-5">
-                            <div class="field-group">
-                                <label>Email</label>
-                                <input type="email" name="email" class="field-input" placeholder="correo@email.com" inputmode="email" required>
-                                <div class="field-line"></div>
-                            </div>
-                            <div class="field-group">
-                                <label>WhatsApp</label>
-                                <input type="tel" name="telefono" class="field-input" placeholder="0981 123 456" inputmode="tel" required>
-                                <div class="field-line"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Edad badge -->
-                    <div class="info-card mt-8 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-semibold" style="color:var(--warm-muted)">Edad calculada</p>
-                            <p class="text-[11px] mt-0.5" style="color:#b8ada4">Según tu fecha de nacimiento</p>
-                        </div>
-                        <div class="flex items-baseline gap-1">
-                            <span id="edad" class="big-number text-4xl" style="color:var(--accent)">--</span>
-                            <span class="text-sm font-semibold" style="color:var(--accent-light)">años</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ═══ Sección 1: Perfil Profesional ═══ -->
-                <div class="form-section" data-section="1">
-                    <div class="mb-8">
-                        <p class="text-xs font-bold uppercase tracking-[0.12em] mb-2" style="color:var(--sage)">Tu trayectoria</p>
-                        <h2 class="font-display text-3xl font-bold leading-tight" style="color:var(--warm-dark)">Perfil profesional</h2>
-                        <p class="mt-3 text-sm leading-relaxed" style="color:var(--warm-muted)">Tu formación y situación laboral nos ayudan a entender tu estabilidad.</p>
-                    </div>
-
-                    <div class="space-y-7">
-                        <div class="field-group">
-                            <label>Nivel educativo</label>
-                            <select name="nivel_educativo" class="field-input">
-                                <option>Primaria</option>
-                                <option>Secundaria</option>
-                                <option>Técnico</option>
-                                <option selected>Universitario</option>
-                                <option>Posgrado / Maestría</option>
-                            </select>
-                            <div class="field-line"></div>
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-[0.1em] mb-3 px-0.5" style="color:var(--warm-muted)">Tipo de empleo</label>
-                            <div class="grid grid-cols-3 gap-3">
-                                <label class="pill-option">
-                                    <input type="radio" name="tipo_empleo" value="dependiente" checked>
-                                    <div class="pill-face">
-                                        <svg class="w-5 h-5 mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                        <span class="text-xs">Dependiente</span>
-                                    </div>
-                                </label>
-                                <label class="pill-option">
-                                    <input type="radio" name="tipo_empleo" value="independiente">
-                                    <div class="pill-face">
-                                        <svg class="w-5 h-5 mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                                        <span class="text-xs">Independiente</span>
-                                    </div>
-                                </label>
-                                <label class="pill-option">
-                                    <input type="radio" name="tipo_empleo" value="emprendedor">
-                                    <div class="pill-face">
-                                        <svg class="w-5 h-5 mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                                        <span class="text-xs">Emprendedor</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ═══ Sección 2: Ingresos ═══ -->
-                <div class="form-section" data-section="2">
-                    <div class="mb-8">
-                        <p class="text-xs font-bold uppercase tracking-[0.12em] mb-2" style="color:var(--accent)">Lo que entra</p>
-                        <h2 class="font-display text-3xl font-bold leading-tight" style="color:var(--warm-dark)">Tus ingresos</h2>
-                        <p class="mt-3 text-sm leading-relaxed" style="color:var(--warm-muted)">Ingresá todos tus ingresos mensuales en guaraníes para un cálculo más preciso.</p>
-                    </div>
-
-                    <div class="space-y-6">
-                        <div class="field-group currency-input">
-                            <label>Ingreso principal</label>
-                            <span class="prefix">Gs.</span>
-                            <input type="number" id="ingresoPrincipal" name="ingreso_principal" class="field-input" style="padding-left:38px" placeholder="5.000.000" inputmode="numeric">
-                            <div class="field-line"></div>
-                        </div>
-                        <div class="field-group currency-input">
-                            <label>Ingresos extras <span class="font-normal normal-case tracking-normal" style="color:#b8ada4">(opcional)</span></label>
-                            <span class="prefix">Gs.</span>
-                            <input type="number" id="ingresoAdicional" name="ingreso_adicional" class="field-input" style="padding-left:38px" placeholder="0" inputmode="numeric">
-                            <div class="field-line"></div>
-                        </div>
-                        <div class="field-group currency-input">
-                            <label>Ingreso de pareja <span class="font-normal normal-case tracking-normal" style="color:#b8ada4">(opcional)</span></label>
-                            <span class="prefix">Gs.</span>
-                            <input type="number" id="ingresoPareja" name="ingreso_pareja" class="field-input" style="padding-left:38px" placeholder="0" inputmode="numeric">
-                            <div class="field-line"></div>
-                        </div>
-                    </div>
-
-                    <!-- Total card -->
-                    <div class="mt-8 rounded-2xl p-6 relative overflow-hidden" style="background:var(--warm-dark)">
-                        <div class="absolute top-0 right-0 w-32 h-32 rounded-full" style="background:radial-gradient(circle, rgba(184,105,62,0.2), transparent); transform:translate(30%,-30%)"></div>
-                        <p class="text-[10px] font-bold uppercase tracking-[0.15em] relative" style="color:var(--warm-muted)">Total ingresos familiar</p>
-                        <p class="big-number text-3xl mt-2 relative" style="color:var(--accent-light)" id="totalIngresosDisplay">Gs. 0</p>
-                    </div>
-                </div>
-
-                <!-- ═══ Sección 3: Gastos ═══ -->
-                <div class="form-section" data-section="3">
-                    <div class="mb-8">
-                        <p class="text-xs font-bold uppercase tracking-[0.12em] mb-2" style="color:var(--warm-muted)">Lo que sale</p>
-                        <h2 class="font-display text-3xl font-bold leading-tight" style="color:var(--warm-dark)">Gastos fijos mensuales</h2>
-                        <p class="mt-3 text-sm leading-relaxed" style="color:var(--warm-muted)">Solo los gastos recurrentes. No incluimos servicios ocasionales.</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-x-6 gap-y-6">
-                        <div class="field-group currency-input">
-                            <label>Alquiler</label>
-                            <span class="prefix">Gs.</span>
-                            <input type="number" name="gasto_alquiler" class="gasto field-input" style="padding-left:38px" placeholder="0" inputmode="numeric">
-                            <div class="field-line"></div>
-                        </div>
-                        <div class="field-group currency-input">
-                            <label>Servicios</label>
-                            <span class="prefix">Gs.</span>
-                            <input type="number" name="gasto_servicios" class="gasto field-input" style="padding-left:38px" placeholder="0" inputmode="numeric">
-                            <div class="field-line"></div>
-                        </div>
-                        <div class="field-group currency-input">
-                            <label>Alimentación</label>
-                            <span class="prefix">Gs.</span>
-                            <input type="number" name="gasto_alimentacion" class="gasto field-input" style="padding-left:38px" placeholder="0" inputmode="numeric">
-                            <div class="field-line"></div>
-                        </div>
-                        <div class="field-group currency-input">
-                            <label>Salud</label>
-                            <span class="prefix">Gs.</span>
-                            <input type="number" name="gasto_salud" class="gasto field-input" style="padding-left:38px" placeholder="0" inputmode="numeric">
-                            <div class="field-line"></div>
-                        </div>
-                    </div>
-
-                    <!-- Capacidad -->
-                    <div class="info-card mt-8">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-semibold" style="color:var(--warm-dark)">Capacidad de ahorro</p>
-                                <p class="text-[11px] mt-0.5" style="color:#b8ada4">Disponible después de gastos fijos</p>
-                            </div>
-                            <span id="capacidadPago" class="big-number text-4xl" style="color:var(--warm-muted)">0%</span>
-                        </div>
-                        <!-- Barra visual -->
-                        <div class="mt-4 h-2 rounded-full overflow-hidden" style="background:var(--warm-border)">
-                            <div id="capacidadBar" class="h-full rounded-full transition-all duration-500" style="width:0%;background:var(--warm-border)"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ═══ Sección 4: Deudas ═══ -->
-                <div class="form-section" data-section="4">
-                    <div class="flex items-end justify-between mb-8">
-                        <div>
-                            <p class="text-xs font-bold uppercase tracking-[0.12em] mb-2" style="color:#c2703e">Compromisos</p>
-                            <h2 class="font-display text-3xl font-bold leading-tight" style="color:var(--warm-dark)">Deudas actuales</h2>
-                            <p class="mt-3 text-sm leading-relaxed" style="color:var(--warm-muted)">Agregá cada préstamo o tarjeta que estés pagando.</p>
-                        </div>
-                        <button type="button" id="agregarDeuda" class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95" style="background:var(--accent-glow);color:var(--accent)">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                        </button>
-                    </div>
-
-                    <div id="deudasContainer" class="space-y-4">
-                        <div id="deudasPlaceholder" class="py-12 text-center">
-                            <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4" style="background:var(--accent-glow)">
-                                <svg class="w-7 h-7" style="color:var(--accent)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            </div>
-                            <p class="text-sm font-semibold" style="color:var(--warm-mid)">Sin deudas registradas</p>
-                            <p class="text-xs mt-1" style="color:var(--warm-muted)">Tocá el botón + para agregar</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ═══ Sección 5: Buró ═══ -->
-                <div class="form-section" data-section="5">
-                    <div class="mb-8">
-                        <p class="text-xs font-bold uppercase tracking-[0.12em] mb-2" style="color:#8b6f4e">Verificación</p>
-                        <h2 class="font-display text-3xl font-bold leading-tight" style="color:var(--warm-dark)">Historial crediticio</h2>
-                        <p class="mt-3 text-sm leading-relaxed" style="color:var(--warm-muted)">Estas preguntas son clave para evaluar tu perfil de riesgo. Respondé con sinceridad.</p>
-                    </div>
-
-                    <div class="space-y-5">
-                        <div class="info-card">
-                            <p class="text-sm font-semibold mb-1" style="color:var(--warm-dark)">¿Figuras en Informconf?</p>
-                            <p class="text-xs mb-4" style="color:var(--warm-muted)">Registro central de deudores</p>
-                            <div class="toggle-select" data-name="informconf">
-                                <button type="button" class="selected-no" data-value="false">No</button>
-                                <button type="button" data-value="true">Sí</button>
-                            </div>
-                        </div>
-
-                        <div class="info-card">
-                            <p class="text-sm font-semibold mb-1" style="color:var(--warm-dark)">¿Atrasos mayores a 90 días?</p>
-                            <p class="text-xs mb-4" style="color:var(--warm-muted)">En los últimos 12 meses</p>
-                            <div class="toggle-select" data-name="atrasos_90">
-                                <button type="button" class="selected-no" data-value="false">No</button>
-                                <button type="button" data-value="true">Sí</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ═══ Sección 6: Vivienda ═══ -->
-                <div class="form-section" data-section="6">
-                    <div class="mb-8">
-                        <p class="text-xs font-bold uppercase tracking-[0.12em] mb-2" style="color:var(--sage)">Tu proyecto</p>
-                        <h2 class="font-display text-3xl font-bold leading-tight" style="color:var(--warm-dark)">La vivienda ideal</h2>
-                        <p class="mt-3 text-sm leading-relaxed" style="color:var(--warm-muted)">Contanos qué tipo de propiedad buscás y tu presupuesto.</p>
-                    </div>
-
-                    <div class="space-y-7">
-                        <div class="field-group">
-                            <label>Ubicación preferida</label>
-                            <input type="text" name="ubicacion_preferida" class="field-input" placeholder="Ej: Luque, Lambaré, Capiatá...">
-                            <div class="field-line"></div>
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-[0.1em] mb-3 px-0.5" style="color:var(--warm-muted)">Tipo de propiedad</label>
-                            <div class="grid grid-cols-3 gap-3">
-                                <label class="pill-option">
-                                    <input type="radio" name="tipo_vivienda" value="Casa" checked>
-                                    <div class="pill-face"><span class="text-sm">Casa</span></div>
-                                </label>
-                                <label class="pill-option">
-                                    <input type="radio" name="tipo_vivienda" value="Departamento">
-                                    <div class="pill-face"><span class="text-sm">Depto</span></div>
-                                </label>
-                                <label class="pill-option">
-                                    <input type="radio" name="tipo_vivienda" value="Duplex">
-                                    <div class="pill-face"><span class="text-sm">Duplex</span></div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-5">
-                            <div class="field-group currency-input">
-                                <label>Presupuesto máximo</label>
-                                <span class="prefix">Gs.</span>
-                                <input type="number" name="presupuesto_maximo" class="field-input" style="padding-left:38px" placeholder="0" inputmode="numeric">
-                                <div class="field-line"></div>
-                            </div>
-                            <div class="field-group currency-input">
-                                <label>Entrega inicial</label>
-                                <span class="prefix">Gs.</span>
-                                <input type="number" name="entrega_inicial" class="field-input" style="padding-left:38px" placeholder="0" inputmode="numeric">
-                                <div class="field-line"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Nota final -->
-                    <div class="mt-8 flex items-start gap-3 p-4 rounded-2xl" style="background:rgba(107,127,94,0.08); border:1px solid rgba(107,127,94,0.15)">
-                        <svg class="w-5 h-5 mt-0.5 flex-shrink-0" style="color:var(--sage)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <p class="text-xs leading-relaxed" style="color:var(--sage)">Al enviar, tus datos son procesados de forma segura. Te contactaremos en un plazo de 24 horas hábiles con el resultado de tu precalificación.</p>
-                    </div>
-                </div>
-
-            </form>
-        </main>
-
-        <!-- Navegación fija -->
-        <div class="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t" style="background:rgba(250,246,241,0.85);border-color:rgba(229,221,213,0.5)">
-            <div class="max-w-xl mx-auto px-5 py-4 flex items-center justify-between gap-3">
-                <button type="button" id="prevBtn" class="btn-ghost disabled:opacity-0 disabled:pointer-events-none" disabled>
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                        Atrás
-                    </span>
-                </button>
-                <button type="button" id="nextBtn" class="btn-primary flex-1 max-w-xs">
-                    <span class="flex items-center justify-center gap-2">
-                        Continuar
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                    </span>
-                </button>
-                <button type="submit" id="submitBtn" class="btn-submit flex-1 max-w-xs hidden">
-                    <span class="flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                        Enviar Solicitud
-                    </span>
-                </button>
+            <div class="text-right">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-[#a1a1aa]">Paso</p>
+                <p class="text-base font-bold text-[#0f766e]"><span id="stepNum">1</span><span class="text-[#d4d4d8] font-normal">/7</span></p>
             </div>
         </div>
+        <div class="flex items-center" id="stepper">
+            <div class="sdot active" data-s="0">1</div>
+            <div class="sline" data-l="0"></div>
+            <div class="sdot" data-s="1">2</div>
+            <div class="sline" data-l="1"></div>
+            <div class="sdot" data-s="2">3</div>
+            <div class="sline" data-l="2"></div>
+            <div class="sdot" data-s="3">4</div>
+            <div class="sline" data-l="3"></div>
+            <div class="sdot" data-s="4">5</div>
+            <div class="sline" data-l="4"></div>
+            <div class="sdot" data-s="5">6</div>
+            <div class="sline" data-l="5"></div>
+            <div class="sdot" data-s="6">7</div>
+        </div>
+    </div>
+</header>
 
+<main class="max-w-lg mx-auto px-5 pt-7">
+<form id="form" novalidate>
+
+    <!-- 0: Datos Personales -->
+    <div class="fs active" data-sec="0">
+        <div class="mb-7">
+            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 1 de 7</p>
+            <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Datos personales</h2>
+            <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Información básica para identificar tu perfil crediticio.</p>
+        </div>
+        <div class="space-y-5">
+            <div><label class="fl">Nombre completo</label><input type="text" name="nombre" class="fi" placeholder="Juan Pérez González" required></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="fl">Cédula</label><input type="text" name="cedula" class="fi" placeholder="1234567" inputmode="numeric" required></div>
+                <div><label class="fl">Nacimiento</label><input type="date" name="fecha_nacimiento" id="fechaNac" class="fi" required></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="fl">Email</label><input type="email" name="email" class="fi" placeholder="correo@email.com" inputmode="email" required></div>
+                <div><label class="fl">WhatsApp</label><input type="tel" name="telefono" class="fi" placeholder="0981 123 456" inputmode="tel" required></div>
+            </div>
+        </div>
+        <div class="card mt-6 flex items-center justify-between">
+            <p class="text-sm font-medium text-[#52525b]">Edad calculada</p>
+            <p class="text-2xl font-extrabold text-[#0f766e]" id="edad">--</p>
+        </div>
     </div>
 
-    <script>
-        /* ── Elementos ── */
-        const sections = document.querySelectorAll('.form-section');
-        const stepDots = document.querySelectorAll('.step-dot');
-        const stepLines = document.querySelectorAll('.step-line');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const submitBtn = document.getElementById('submitBtn');
-        const stepCounter = document.getElementById('stepCounter');
-        const toast = document.getElementById('toast');
-        let current = 0;
-
-        /* ── Colores de fondo por sección ── */
-        const bgColors = [
-            ['rgba(184,105,62,0.08)', 'rgba(107,127,94,0.06)', 'rgba(232,169,122,0.05)'],
-            ['rgba(107,127,94,0.1)', 'rgba(168,184,158,0.06)', 'rgba(107,127,94,0.04)'],
-            ['rgba(184,105,62,0.1)', 'rgba(232,169,122,0.07)', 'rgba(184,105,62,0.04)'],
-            ['rgba(138,123,114,0.06)', 'rgba(184,105,62,0.04)', 'rgba(107,127,94,0.05)'],
-            ['rgba(194,112,62,0.08)', 'rgba(184,105,62,0.05)', 'rgba(194,112,62,0.03)'],
-            ['rgba(139,111,78,0.08)', 'rgba(184,105,62,0.04)', 'rgba(139,111,78,0.03)'],
-            ['rgba(107,127,94,0.1)', 'rgba(168,184,158,0.07)', 'rgba(107,127,94,0.04)'],
-        ];
-        const blobs = document.querySelectorAll('.scene-bg .blob');
-
-        /* ── Mostrar sección ── */
-        function showSection(idx) {
-            current = idx;
-            sections.forEach((s, i) => s.classList.toggle('active', i === idx));
-
-            /* Stepper */
-            stepDots.forEach((dot, i) => {
-                dot.classList.remove('active', 'done');
-                if (i < idx) {
-                    dot.classList.add('done');
-                    dot.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
-                } else if (i === idx) {
-                    dot.classList.add('active');
-                    dot.textContent = i + 1;
-                } else {
-                    dot.textContent = i + 1;
-                }
-            });
-            stepLines.forEach((line, i) => {
-                line.classList.toggle('filled', i < idx);
-            });
-
-            stepCounter.innerHTML = `${idx + 1}<span class="text-base font-normal" style="color:var(--warm-muted)">/${sections.length}</span>`;
-
-            /* Fondo */
-            const colors = bgColors[idx] || bgColors[0];
-            blobs.forEach((b, i) => { b.style.background = colors[i] || colors[0]; });
-
-            /* Botones */
-            prevBtn.disabled = idx === 0;
-            if (idx === sections.length - 1) {
-                nextBtn.classList.add('hidden');
-                submitBtn.classList.remove('hidden');
-            } else {
-                nextBtn.classList.remove('hidden');
-                submitBtn.classList.add('hidden');
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        nextBtn.addEventListener('click', () => {
-            if (current < sections.length - 1) showSection(current + 1);
-        });
-        prevBtn.addEventListener('click', () => {
-            if (current > 0) showSection(current - 1);
-        });
-
-        /* ── Validación básica al avanzar ── */
-        nextBtn.addEventListener('click', (e) => {
-            const sec = sections[current];
-            const required = sec.querySelectorAll('[required]');
-            let valid = true;
-            required.forEach(inp => {
-                if (!inp.value.trim()) {
-                    valid = false;
-                    inp.style.borderBottomColor = '#c2703e';
-                    inp.addEventListener('input', function handler() {
-                        inp.style.borderBottomColor = '';
-                        inp.removeEventListener('input', handler);
-                    });
-                }
-            });
-            if (!valid) {
-                showToast('Completá los campos obligatorios para continuar');
-            }
-        });
-
-        /* ── Toast ── */
-        function showToast(msg) {
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2800);
-        }
-
-        /* ── Edad ── */
-        document.getElementById('fechaNac').addEventListener('change', function() {
-            const b = new Date(this.value);
-            const t = new Date();
-            let age = t.getFullYear() - b.getFullYear();
-            const m = t.getMonth() - b.getMonth();
-            if (m < 0 || (m === 0 && t.getDate() < b.getDate())) age--;
-            document.getElementById('edad').textContent = (age >= 0 && !isNaN(age)) ? age : '--';
-        });
-
-        /* ── Cálculos ── */
-        function calc() {
-            const ing = parseFloat(document.getElementById('ingresoPrincipal').value) || 0;
-            const ingA = parseFloat(document.getElementById('ingresoAdicional').value) || 0;
-            const ingP = parseFloat(document.getElementById('ingresoPareja').value) || 0;
-            const totalIng = ing + ingA + ingP;
-
-            document.getElementById('totalIngresosDisplay').textContent = 'Gs. ' + totalIng.toLocaleString('es-PY');
-
-            let totalGasto = 0;
-            document.querySelectorAll('.gasto').forEach(g => totalGasto += parseFloat(g.value) || 0);
-
-            const cap = totalIng > 0 ? ((totalIng - totalGasto) / totalIng) * 100 : 0;
-            const elCap = document.getElementById('capacidadPago');
-            const elBar = document.getElementById('capacidadBar');
-            elCap.textContent = cap.toFixed(1) + '%';
-            elBar.style.width = Math.min(Math.max(cap, 0), 100) + '%';
-
-            if (cap >= 30) {
-                elCap.style.color = 'var(--sage)';
-                elBar.style.background = 'var(--sage)';
-            } else if (cap > 0) {
-                elCap.style.color = 'var(--accent)';
-                elBar.style.background = 'var(--accent)';
-            } else {
-                elCap.style.color = 'var(--warm-muted)';
-                elBar.style.background = 'var(--warm-border)';
-            }
-        }
-
-        /* ── Deudas ── */
-        document.getElementById('agregarDeuda').addEventListener('click', () => {
-            const ph = document.getElementById('deudasPlaceholder');
-            if (ph) ph.remove();
-
-            const div = document.createElement('div');
-            div.className = 'deuda-row info-card space-y-3 relative';
-            div.innerHTML = `
-                <button type="button" class="absolute top-3 right-3 p-1.5 rounded-lg transition-all hover:bg-red-50" style="color:var(--warm-muted)" title="Eliminar">
-                    <svg class="w-4 h-4 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-                <div class="field-group">
-                    <label>Entidad</label>
-                    <input type="text" placeholder="Banco, financiera..." class="field-input" style="font-size:15px">
-                    <div class="field-line"></div>
+    <!-- 1: Perfil Profesional -->
+    <div class="fs" data-sec="1">
+        <div class="mb-7">
+            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 2 de 7</p>
+            <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Perfil profesional</h2>
+            <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Formación académica y situación laboral.</p>
+        </div>
+        <div class="space-y-6">
+            <div><label class="fl">Nivel educativo</label>
+                <select name="nivel_educativo" class="fi">
+                    <option>Primaria</option><option>Secundaria</option><option>Técnico</option><option selected>Universitario</option><option>Posgrado / Maestría</option>
+                </select>
+            </div>
+            <div>
+                <label class="fl">Tipo de empleo</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="pill"><input type="radio" name="tipo_empleo" value="dependiente" checked><div class="pf">Dependiente</div></label>
+                    <label class="pill"><input type="radio" name="tipo_empleo" value="independiente"><div class="pf">Independiente</div></label>
+                    <label class="pill"><input type="radio" name="tipo_empleo" value="emprendedor"><div class="pf">Emprendedor</div></label>
                 </div>
-                <div class="field-group currency-input">
-                    <label>Cuota mensual</label>
-                    <span class="prefix">Gs.</span>
-                    <input type="number" placeholder="0" class="field-input" style="padding-left:38px;font-size:15px" inputmode="numeric">
-                    <div class="field-line"></div>
-                </div>
-            `;
-            div.querySelector('button').addEventListener('click', () => {
-                div.style.opacity = '0';
-                div.style.transform = 'translateY(-8px)';
-                div.style.transition = 'all 0.25s';
-                setTimeout(() => div.remove(), 250);
-            });
-            document.getElementById('deudasContainer').appendChild(div);
-        });
+            </div>
+        </div>
+    </div>
 
-        /* ── Toggle selects (buró) ── */
-        document.querySelectorAll('.toggle-select').forEach(group => {
-            const btns = group.querySelectorAll('button');
-            btns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    btns.forEach(b => b.classList.remove('selected-no', 'selected-si'));
-                    const val = btn.dataset.value;
-                    btn.classList.add(val === 'false' ? 'selected-no' : 'selected-si');
+    <!-- 2: Ingresos -->
+    <div class="fs" data-sec="2">
+        <div class="mb-7">
+            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 3 de 7</p>
+            <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Ingresos mensuales</h2>
+            <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Todos los montos en guaraníes.</p>
+        </div>
+        <div class="space-y-5">
+            <div class="cpref"><label class="fl">Ingreso principal</label><span>Gs.</span><input type="number" id="ingresoPrincipal" name="ingreso_principal" class="fi" placeholder="5.000.000" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Ingresos extras <span class="font-normal text-[#a1a1aa]">(opcional)</span></label><span>Gs.</span><input type="number" id="ingresoAdicional" name="ingreso_adicional" class="fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Ingreso de pareja <span class="font-normal text-[#a1a1aa]">(opcional)</span></label><span>Gs.</span><input type="number" id="ingresoPareja" name="ingreso_pareja" class="fi" placeholder="0" inputmode="numeric"></div>
+        </div>
+        <div class="card mt-6">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-[#a1a1aa] mb-1">Total familiar</p>
+            <p class="text-2xl font-extrabold text-[#1c1917] tabular-nums" id="totalIngresosDisplay">Gs. 0</p>
+        </div>
+    </div>
+
+    <!-- 3: Gastos -->
+    <div class="fs" data-sec="3">
+        <div class="mb-7">
+            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 4 de 7</p>
+            <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Gastos fijos</h2>
+            <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Solo compromisos mensuales recurrentes.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="cpref"><label class="fl">Alquiler</label><span>Gs.</span><input type="number" name="gasto_alquiler" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Servicios</label><span>Gs.</span><input type="number" name="gasto_servicios" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Alimentación</label><span>Gs.</span><input type="number" name="gasto_alimentacion" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Salud</label><span>Gs.</span><input type="number" name="gasto_salud" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+        </div>
+        <div class="card mt-6">
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-sm font-medium text-[#52525b]">Capacidad de ahorro</p>
+                <p class="text-xl font-extrabold" id="capacidadPago" style="color:#a1a1aa">0%</p>
+            </div>
+            <div class="h-1.5 rounded-full bg-[#f0f0ef] overflow-hidden">
+                <div id="capacidadBar" class="h-full rounded-full transition-all duration-500" style="width:0%;background:#e4e4e7"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4: Deudas -->
+    <div class="fs" data-sec="4">
+        <div class="flex items-end justify-between mb-7">
+            <div>
+                <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 5 de 7</p>
+                <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Deudas actuales</h2>
+                <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Préstamos o tarjetas que estés pagando.</p>
+            </div>
+            <button type="button" id="addDeuda" class="w-10 h-10 rounded-xl border-2 border-[#e4e4e7] bg-white flex items-center justify-center text-[#71717a] hover:border-[#0f766e] hover:text-[#0f766e] transition-colors flex-shrink-0 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            </button>
+        </div>
+        <div id="deudasBox" class="space-y-3">
+            <div id="deudasEmpty" class="py-12 text-center border-2 border-dashed border-[#e4e4e7] rounded-2xl">
+                <p class="text-sm font-medium text-[#a1a1aa]">Sin deudas registradas</p>
+                <p class="text-xs text-[#d4d4d8] mt-1">Tocá el botón para agregar</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5: Buró -->
+    <div class="fs" data-sec="5">
+        <div class="mb-7">
+            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 6 de 7</p>
+            <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Historial crediticio</h2>
+            <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Verificación de antecedentes financieros.</p>
+        </div>
+        <div class="space-y-4">
+            <div class="card">
+                <p class="text-sm font-semibold text-[#1c1917] mb-0.5">¿Figuras en Informconf?</p>
+                <p class="text-xs text-[#a1a1aa] mb-3">Registro de deudores del sistema financiero</p>
+                <div class="tg" data-name="informconf">
+                    <button type="button" class="on-no" data-v="false">No</button>
+                    <button type="button" data-v="true">Sí</button>
+                </div>
+            </div>
+            <div class="card">
+                <p class="text-sm font-semibold text-[#1c1917] mb-0.5">¿Atrasos mayores a 90 días?</p>
+                <p class="text-xs text-[#a1a1aa] mb-3">En los últimos 12 meses</p>
+                <div class="tg" data-name="atrasos_90">
+                    <button type="button" class="on-no" data-v="false">No</button>
+                    <button type="button" data-v="true">Sí</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6: Vivienda -->
+    <div class="fs" data-sec="6">
+        <div class="mb-7">
+            <p class="text-xs font-bold text-[#0f766e] mb-1.5">Paso 7 de 7</p>
+            <h2 class="text-2xl font-extrabold text-[#1c1917] leading-tight">Tu propiedad ideal</h2>
+            <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Datos del inmueble que buscás financiar.</p>
+        </div>
+        <div class="space-y-5">
+            <div><label class="fl">Ubicación preferida</label><input type="text" name="ubicacion_preferida" class="fi" placeholder="Ciudad o zona"></div>
+            <div>
+                <label class="fl">Tipo de propiedad</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="pill"><input type="radio" name="tipo_vivienda" value="Casa" checked><div class="pf">Casa</div></label>
+                    <label class="pill"><input type="radio" name="tipo_vivienda" value="Departamento"><div class="pf">Depto</div></label>
+                    <label class="pill"><input type="radio" name="tipo_vivienda" value="Duplex"><div class="pf">Duplex</div></label>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="cpref"><label class="fl">Presupuesto máximo</label><span>Gs.</span><input type="number" name="presupuesto_maximo" class="fi" placeholder="0" inputmode="numeric"></div>
+                <div class="cpref"><label class="fl">Entrega inicial</label><span>Gs.</span><input type="number" name="entrega_inicial" class="fi" placeholder="0" inputmode="numeric"></div>
+            </div>
+        </div>
+        <div class="mt-6 p-4 bg-[#f0fdfa] border border-[#ccfbf1] rounded-xl">
+            <p class="text-xs text-[#0f766e] leading-relaxed">Tus datos se procesan de forma segura y confidencial. Recibirás una respuesta en un plazo de 24 horas hábiles.</p>
+        </div>
+    </div>
+
+</form>
+</main>
+
+<!-- Nav -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 bg-[#f7f7f6]/90 backdrop-blur-md border-t border-[#e4e4e7]">
+    <div class="max-w-lg mx-auto px-5 py-4 flex items-center gap-3">
+        <button type="button" id="prevBtn" class="w-11 h-11 rounded-xl border-2 border-[#e4e4e7] bg-white flex items-center justify-center text-[#71717a] hover:border-[#d4d4d8] transition-colors disabled:opacity-0 disabled:pointer-events-none active:scale-95" disabled>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button type="button" id="nextBtn" class="flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#1c1917] text-white hover:bg-[#292524] active:scale-[0.98] transition-all">Continuar</button>
+        <button type="submit" id="submitBtn" class="hidden flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#0f766e] text-white hover:bg-[#115e59] active:scale-[0.98] transition-all">Enviar solicitud</button>
+    </div>
+</nav>
+
+<script>
+    const secs = document.querySelectorAll('.fs');
+    const dots = document.querySelectorAll('.sdot');
+    const lines = document.querySelectorAll('.sline');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const stepNum = document.getElementById('stepNum');
+    const toastEl = document.getElementById('toast');
+    let cur = 0;
+
+    function show(i) {
+        cur = i;
+        secs.forEach((s,j) => s.classList.toggle('active', j===i));
+        dots.forEach((d,j) => {
+            d.classList.remove('active','done');
+            if (j < i) {
+                d.classList.add('done');
+                d.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+            } else if (j === i) {
+                d.classList.add('active');
+                d.textContent = j + 1;
+            } else {
+                d.textContent = j + 1;
+            }
+        });
+        lines.forEach((l,j) => l.classList.toggle('filled', j < i));
+        stepNum.textContent = i + 1;
+        prevBtn.disabled = i === 0;
+        nextBtn.classList.toggle('hidden', i === secs.length - 1);
+        submitBtn.classList.toggle('hidden', i !== secs.length - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    nextBtn.addEventListener('click', () => {
+        const req = secs[cur].querySelectorAll('[required]');
+        let ok = true;
+        req.forEach(inp => {
+            if (!inp.value.trim()) {
+                ok = false;
+                inp.style.borderColor = '#dc2626';
+                inp.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.08)';
+                inp.addEventListener('input', function h() {
+                    inp.style.borderColor = '';
+                    inp.style.boxShadow = '';
+                    inp.removeEventListener('input', h);
                 });
+            }
+        });
+        if (!ok) { showToast('Completá los campos obligatorios para continuar'); return; }
+        if (cur < secs.length - 1) show(cur + 1);
+    });
+    prevBtn.addEventListener('click', () => { if (cur > 0) show(cur - 1); });
+
+    function showToast(m) {
+        toastEl.textContent = m;
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 2800);
+    }
+
+    // Edad
+    document.getElementById('fechaNac').addEventListener('change', function() {
+        const b = new Date(this.value), t = new Date();
+        let a = t.getFullYear() - b.getFullYear();
+        const m = t.getMonth() - b.getMonth();
+        if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
+        document.getElementById('edad').textContent = (a >= 0 && !isNaN(a)) ? a : '--';
+    });
+
+    // Cálculos
+    function calc() {
+        const ip = parseFloat(document.getElementById('ingresoPrincipal').value) || 0;
+        const ia = parseFloat(document.getElementById('ingresoAdicional').value) || 0;
+        const ip2 = parseFloat(document.getElementById('ingresoPareja').value) || 0;
+        const total = ip + ia + ip2;
+        document.getElementById('totalIngresosDisplay').textContent = 'Gs. ' + total.toLocaleString('es-PY');
+        let tg = 0;
+        document.querySelectorAll('.gasto').forEach(g => tg += parseFloat(g.value) || 0);
+        const cap = total > 0 ? ((total - tg) / total) * 100 : 0;
+        const el = document.getElementById('capacidadPago');
+        const bar = document.getElementById('capacidadBar');
+        el.textContent = cap.toFixed(1) + '%';
+        bar.style.width = Math.min(Math.max(cap, 0), 100) + '%';
+        if (cap >= 30) { el.style.color = '#16a34a'; bar.style.background = '#16a34a'; }
+        else if (cap > 0) { el.style.color = '#0f766e'; bar.style.background = '#0f766e'; }
+        else { el.style.color = '#a1a1aa'; bar.style.background = '#e4e4e7'; }
+    }
+
+    // Deudas
+    document.getElementById('addDeuda').addEventListener('click', () => {
+        const ph = document.getElementById('deudasEmpty'); if (ph) ph.remove();
+        const d = document.createElement('div');
+        d.className = 'card flex gap-3 items-start';
+        d.innerHTML = `
+            <div class="flex-1 space-y-3">
+                <input type="text" placeholder="Entidad (banco, financiera...)" class="fi" style="font-size:14px">
+                <div class="cpref"><span>Gs.</span><input type="number" placeholder="Cuota mensual" class="fi" style="padding-left:46px;font-size:14px" inputmode="numeric"></div>
+            </div>
+            <button type="button" class="mt-1.5 p-1.5 rounded-lg text-[#d4d4d8] hover:text-[#dc2626] hover:bg-[#fef2f2] transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>`;
+        d.querySelector('button').addEventListener('click', () => {
+            d.style.opacity = '0'; d.style.transform = 'translateY(-4px)';
+            d.style.transition = 'all 0.2s'; setTimeout(() => d.remove(), 200);
+        });
+        document.getElementById('deudasBox').appendChild(d);
+    });
+
+    // Toggles buró
+    document.querySelectorAll('.tg').forEach(g => {
+        g.querySelectorAll('button').forEach(b => {
+            b.addEventListener('click', () => {
+                g.querySelectorAll('button').forEach(x => x.classList.remove('on-no', 'on-si'));
+                b.classList.add(b.dataset.v === 'false' ? 'on-no' : 'on-si');
             });
         });
+    });
 
-        /* ── Envío ── */
-        document.getElementById('precalificacionForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            showToast('Solicitud enviada correctamente. Te contactaremos pronto.');
+    // Submit
+    document.getElementById('form').addEventListener('submit', e => {
+        e.preventDefault();
+        showToast('Solicitud enviada correctamente');
+        submitBtn.textContent = 'Enviado';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+    });
 
-            /* Animación de éxito en el botón */
-            submitBtn.style.background = 'var(--sage)';
-            submitBtn.innerHTML = `
-                <span class="flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    Enviado
-                </span>`;
-            submitBtn.disabled = true;
-            submitBtn.style.opacity = '0.7';
-        });
-
-        /* ── Listeners de cálculo ── */
-        document.addEventListener('input', (e) => {
-            if (e.target.matches('input')) calc();
-        });
-
-        /* ── Init ── */
-        showSection(0);
-    </script>
+    document.addEventListener('input', e => { if (e.target.matches('input')) calc(); });
+    show(0);
+</script>
 </body>
 </html>
