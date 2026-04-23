@@ -3,8 +3,8 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, JSON
 from sqlalchemy.sql import func
 from app.config import Base
 
-class SolicitudPrecalificacion(Base):
-    __tablename__ = "solicitudes_precalificacion"
+class Solicitud(Base):
+    __tablename__ = "solicitudes"
 
     id = Column(Integer, primary_key=True, index=True)
     # Datos personales
@@ -53,3 +53,6 @@ class SolicitudPrecalificacion(Base):
     campana = Column(String)
     ip_cliente = Column(String)
     fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
+
+
+

@@ -1,8 +1,9 @@
 # app/routes/web.py
 from starlette.routing import Router
 from app.config import templates, custom_route
-from app.models.solicitud import Solicitud
-from app.services.lead_service import LeadService # Importamos el decorador
+
+from app.services.precalificacion_service import PrecalificacionService
+from app.services.lead_service import LeadService 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from app.config import SessionLocal 
@@ -87,7 +88,7 @@ async def guardar_precalificacion_view(request):
         # 1. Obtenemos los datos del cuerpo de la petición
         data = await request.json()
 
-        # 2. Llamamos al Service para que haga el trabajo pesado
+        
         # Esto sigue el mismo patrón que tu ejemplo: await Service.metodo()
         await PrecalificacionService.guardar_solicitud(data)
 
@@ -100,6 +101,7 @@ async def guardar_precalificacion_view(request):
     except Exception as e:
         print(f"Error en la ruta de precalificación: {e}")
         return JSONResponse(
-            {"status": "error", "detail": "Ocurrió un error al procesar la solicitud"}, 
+            # Cambiamos el mensaje genérico por el error real {e}
+            {"status": "error", "detail": str(e)}, 
             status_code=400
         )

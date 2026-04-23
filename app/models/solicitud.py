@@ -54,3 +54,7 @@ class Solicitud(Base):
 
     def __repr__(self):
         return f"<Solicitud(id={self.id}, nombre='{self.nombre}', estado='{self.estado}')>"
+    
+
+
+    

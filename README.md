@@ -49,7 +49,9 @@ DB_HOST=localhost
 
 
 5. Inicializar la base de datos
+```
 python inidb.py
+```
 
 Este script:
 
