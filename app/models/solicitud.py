@@ -1,6 +1,7 @@
+# app/models
 from sqlalchemy import Column, Integer, String, Date, Numeric, Boolean, DateTime, func
 from sqlalchemy.dialects.postgresql import JSONB
-from app.config import Base
+from app.database import Base
 
 class Solicitud(Base):
     __tablename__ = "solicitudes"
@@ -51,6 +52,19 @@ class Solicitud(Base):
     
     # Metadata
     created_at = Column(DateTime, server_default=func.now())
+
+    # === PROPIEDADES CALCULADAS ===
+    @property
+    def ingreso_total(self):
+        """Suma de todos los ingresos del postulante"""
+        return (self.ingreso_principal or 0) + \
+               (self.ingreso_adicional or 0) + \
+               (self.ingreso_pareja or 0)
+
+    @property
+    def capacidad_estimada(self):
+        return float(self.ingreso_total) * 0.4
+
 
     def __repr__(self):
         return f"<Solicitud(id={self.id}, nombre='{self.nombre}', estado='{self.estado}')>"

@@ -1,0 +1,96 @@
+<div class="animate-fade-in-up">
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight" style="color: var(--main-text); font-family: 'Space Grotesk', sans-serif;">
+                Gestión de Solicitudes
+            </h2>
+            <p class="text-sm" style="color: var(--main-text-muted);">
+                Listado completo de interesados en el programa Che Roga.
+            </p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <span class="badge badge-info flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+                {{ solicitudes|length }} Registros Encontrados
+            </span>
+        </div>
+    </div>
+
+    <div class="card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b" style="background: var(--main-bg-alt); border-color: var(--main-border-light);">
+                        <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider" style="color: var(--main-text-secondary);">Postulante</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider" style="color: var(--main-text-secondary);">Ingresos Totales</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider" style="color: var(--main-text-secondary);">Ubicación</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider" style="color: var(--main-text-secondary);">Estado</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right" style="color: var(--main-text-secondary);">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y" style="border-color: var(--main-border-light);">
+                    {% for sol in solicitudes %}
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold" style="color: var(--main-text);">{{ sol.nombre }}</span>
+                                <span class="text-xs font-medium" style="color: var(--main-text-muted);">CI: {{ sol.cedula }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                {# Sumamos ingresos principal + adicional + pareja #}
+                                <span class="text-sm font-bold text-blue-600">
+                                    Gs. {{ "{:,.0f}".format(sol.ingreso_principal + (sol.ingreso_adicional or 0) + (sol.ingreso_pareja or 0)).replace(',', '.') }}
+                                </span>
+                                <span class="text-[10px] uppercase font-bold" style="color: var(--main-text-muted);">{{ sol.tipo_empleo }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2 text-sm" style="color: var(--main-text-secondary);">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                {{ sol.ubicacion_preferida or 'No especificado' }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if sol.informconf %}
+                                <span class="badge badge-danger">Inforconf</span>
+                            {% elif sol.estado == 'pendiente' %}
+                                <span class="badge badge-warning">Pendiente</span>
+                            {% else %}
+                                <span class="badge badge-success">Aprobado</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button hx-get="/solicitudes/ver/{{ sol.id }}" 
+                                    hx-target="#main-content"                                     
+                                    class="p-2 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-all focus-ring">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                        </td>
+
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center">
+                                <svg class="w-12 h-12 text-gray-200 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                </svg>
+                                <span class="text-sm font-medium text-gray-400">No hay solicitudes para mostrar</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

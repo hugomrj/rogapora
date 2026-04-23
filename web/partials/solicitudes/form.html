@@ -1,0 +1,101 @@
+
+<div class="animate-fade-in">
+    <div class="mb-6 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <button hx-get="/solicitudes-listar" hx-target="#main-content" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+            </button>
+                <h2 class="text-2xl font-bold tracking-tight" style="color: var(--main-text);">
+                    Detalle de Solicitud #{{ sol.id }}
+                </h2>
+        </div>
+        <div class="flex gap-2">
+            <span class="badge {% if sol.informconf %}badge-danger{% else %}badge-success{% endif %}">
+                {% if sol.informconf %}Con Informconf{% else %}Sin Informconf{% endif %}
+            </span>
+        </div>
+    </div>
+
+    <form class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="card p-6">
+                <h3 class="text-sm font-bold uppercase mb-4 text-gray-400 tracking-widest">Información del Postulante</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-gray-500">Nombre Completo</label>
+                        <input type="text" readonly value="{{ sol.nombre }}" class="w-full bg-gray-50 border-none rounded-lg text-sm font-medium p-2.5">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-gray-500">Cédula de Identidad</label>
+                        <input type="text" readonly value="{{ sol.cedula }}" class="w-full bg-gray-50 border-none rounded-lg text-sm font-medium p-2.5">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-gray-500">Email</label>
+                        <input type="text" readonly value="{{ sol.email or '' }}" class="w-full bg-gray-50 border-none rounded-lg text-sm font-medium p-2.5">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-gray-500">Teléfono</label>
+                        <input type="text" readonly value="{{ sol.telefono or '' }}" class="w-full bg-gray-50 border-none rounded-lg text-sm font-medium p-2.5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <h3 class="text-sm font-bold uppercase mb-4 text-gray-400 tracking-widest">Situación Económica</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+                        <label class="text-[10px] font-bold text-blue-600 uppercase">Ingresos Totales</label>
+                        <p class="text-lg font-black text-blue-700">Gs. {{ "{:,.0f}".format(sol.ingreso_total).replace(',', '.') }}</p>
+                    </div>
+                    <div class="p-3 bg-red-50/50 rounded-xl border border-red-100">
+                        <label class="text-[10px] font-bold text-red-600 uppercase">Egresos Declarados</label>
+                        <p class="text-lg font-black text-red-700">
+                            Gs. {{ "{:,.0f}".format((sol.gasto_alquiler or 0) + (sol.gasto_servicios or 0) + (sol.gasto_alimentacion or 0)).replace(',', '.') }}
+                        </p>
+                    </div>
+                    <div class="p-3 bg-green-50/50 rounded-xl border border-green-100">
+                        <label class="text-[10px] font-bold text-green-600 uppercase">Capacidad Estimada</label>
+                        <p class="text-lg font-black text-green-700">                                                        
+                            Gs. {{ "{:,.0f}".format(sol.capacidad_estimada).replace(',', '.') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="card p-6">
+                <h3 class="text-sm font-bold uppercase mb-4 text-gray-400 tracking-widest">Preferencia de Vivienda</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Ubicación Deseada</label>
+                        <p class="text-sm font-bold">{{ sol.ubicacion_preferida or 'No especificado' }}</p>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Tipo de Vivienda</label>
+                        <p class="text-sm font-bold">{{ sol.tipo_vivienda or 'Cualquiera' }}</p>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Presupuesto Máximo</label>
+                        <p class="text-sm font-bold">Gs. {{ "{:,.0f}".format(sol.presupuesto_maximo or 0).replace(',', '.') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <h3 class="text-sm font-bold uppercase mb-4 text-gray-400 tracking-widest">Origen de Lead</h3>
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center border shadow-sm">
+                        <span class="text-xs font-bold">{{ sol.origen_contacto[0]|upper if sol.origen_contacto else '?' }}</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-gray-700">{{ sol.origen_contacto|capitalize }}</p>
+                        <p class="text-[10px] text-gray-400">{{ sol.campana }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

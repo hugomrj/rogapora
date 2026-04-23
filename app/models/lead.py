@@ -1,6 +1,6 @@
 # app/models/lead.py
 from sqlalchemy import Column, Integer, String, Text
-from app.config import Base
+from app.database import Base
 
 class Lead(Base):
     __tablename__ = "leads"

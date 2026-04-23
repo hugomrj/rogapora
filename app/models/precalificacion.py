@@ -1,7 +1,7 @@
 # app/models/precalificador.py
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, JSON
 from sqlalchemy.sql import func
-from app.config import Base
+from app.database import Base
 
 class Solicitud(Base):
     __tablename__ = "solicitudes"
