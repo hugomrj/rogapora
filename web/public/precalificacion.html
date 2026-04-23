@@ -27,6 +27,11 @@
         .fi:hover { border-color: #d4d4d8; }
         .fi:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(27,54,93,0.1); }
 
+        /* Ocultar flechas de number en todos los navegadores */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
         select.fi {
             cursor: pointer;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
@@ -215,9 +220,9 @@
             <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Todos los montos en guaraníes.</p>
         </div>
         <div class="space-y-5">
-            <div class="cpref"><label class="fl">Ingreso principal</label><span>Gs.</span><input type="number" id="ingresoPrincipal" name="ingreso_principal" class="fi" placeholder="5.000.000" inputmode="numeric"></div>
-            <div class="cpref"><label class="fl">Ingresos extras <span class="font-normal text-[#a1a1aa]">(opcional)</span></label><span>Gs.</span><input type="number" id="ingresoAdicional" name="ingreso_adicional" class="fi" placeholder="0" inputmode="numeric"></div>
-            <div class="cpref"><label class="fl">Ingreso de pareja <span class="font-normal text-[#a1a1aa]">(opcional)</span></label><span>Gs.</span><input type="number" id="ingresoPareja" name="ingreso_pareja" class="fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Ingreso principal</label><span>Gs.</span><input type="text" id="ingresoPrincipal" name="ingreso_principal" class="fi num-miles" placeholder="5.000.000" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Ingresos extras <span class="font-normal text-[#a1a1aa]">(opcional)</span></label><span>Gs.</span><input type="text" id="ingresoAdicional" name="ingreso_adicional" class="fi num-miles" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Ingreso de pareja <span class="font-normal text-[#a1a1aa]">(opcional)</span></label><span>Gs.</span><input type="text" id="ingresoPareja" name="ingreso_pareja" class="fi num-miles" placeholder="0" inputmode="numeric"></div>
         </div>
         <div class="card mt-6">
             <p class="text-[11px] font-bold uppercase tracking-wider text-[#a1a1aa] mb-1">Total familiar</p>
@@ -233,10 +238,10 @@
             <p class="text-sm text-[#71717a] mt-2 leading-relaxed">Solo compromisos mensuales recurrentes.</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
-            <div class="cpref"><label class="fl">Alquiler</label><span>Gs.</span><input type="number" name="gasto_alquiler" class="gasto fi" placeholder="0" inputmode="numeric"></div>
-            <div class="cpref"><label class="fl">Servicios</label><span>Gs.</span><input type="number" name="gasto_servicios" class="gasto fi" placeholder="0" inputmode="numeric"></div>
-            <div class="cpref"><label class="fl">Alimentación</label><span>Gs.</span><input type="number" name="gasto_alimentacion" class="gasto fi" placeholder="0" inputmode="numeric"></div>
-            <div class="cpref"><label class="fl">Salud</label><span>Gs.</span><input type="number" name="gasto_salud" class="gasto fi" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Alquiler</label><span>Gs.</span><input type="text" name="gasto_alquiler" class="gasto fi num-miles" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Servicios</label><span>Gs.</span><input type="text" name="gasto_servicios" class="gasto fi num-miles" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Alimentación</label><span>Gs.</span><input type="text" name="gasto_alimentacion" class="gasto fi num-miles" placeholder="0" inputmode="numeric"></div>
+            <div class="cpref"><label class="fl">Salud</label><span>Gs.</span><input type="text" name="gasto_salud" class="gasto fi num-miles" placeholder="0" inputmode="numeric"></div>
         </div>
         <div class="card mt-6">
             <div class="flex items-center justify-between mb-3">
@@ -314,8 +319,8 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <div class="cpref"><label class="fl">Presupuesto máximo</label><span>Gs.</span><input type="number" name="presupuesto_maximo" class="fi" placeholder="0" inputmode="numeric"></div>
-                <div class="cpref"><label class="fl">Entrega inicial</label><span>Gs.</span><input type="number" name="entrega_inicial" class="fi" placeholder="0" inputmode="numeric"></div>
+                <div class="cpref"><label class="fl">Presupuesto máximo</label><span>Gs.</span><input type="text" name="presupuesto_maximo" class="fi num-miles" placeholder="0" inputmode="numeric"></div>
+                <div class="cpref"><label class="fl">Entrega inicial</label><span>Gs.</span><input type="text" name="entrega_inicial" class="fi num-miles" placeholder="0" inputmode="numeric"></div>
             </div>
         </div>
 
@@ -347,12 +352,36 @@
         </button>
         <button type="button" id="nextBtn" class="flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#1B365D] text-white hover:bg-[#152a47] active:scale-[0.98] transition-all">Continuar</button>
         
-        <!-- CORRECCIÓN: Agregado form="form" para vincular el botón fuera del formulario -->
         <button type="submit" id="submitBtn" form="form" class="hidden flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#D98324] text-white hover:bg-[#c27620] active:scale-[0.98] transition-all">Enviar solicitud</button>
     </div>
 </nav>
 
 <script>
+    // --- Formato de miles: limpia y muestra con puntos, envía números limpios ---
+    function parseMiles(str) {
+        return parseFloat((str || '').replace(/\./g, '').replace(',', '.')) || 0;
+    }
+    function formatMiles(str) {
+        const digits = (str || '').replace(/[^\d]/g, '');
+        if (!digits) return '';
+        return parseInt(digits, 10).toLocaleString('es-PY');
+    }
+    function applyMilesFormat(input) {
+        const pos = input.selectionStart;
+        const beforeLen = input.value.length;
+        input.value = formatMiles(input.value);
+        const afterLen = input.value.length;
+        const diff = afterLen - beforeLen;
+        input.setSelectionRange(pos + diff, pos + diff);
+    }
+
+    // Delegación: formatear todos los .num-miles al escribir
+    document.addEventListener('input', e => {
+        if (e.target.matches('.num-miles')) {
+            applyMilesFormat(e.target);
+        }
+    });
+
     // --- Navegación y UI ---
     const secs = document.querySelectorAll('.fs');
     const dots = document.querySelectorAll('.sdot');
@@ -417,7 +446,7 @@
         setTimeout(() => toastEl.classList.remove('show'), 2800);
     }
 
-    // --- Cálculos ---
+    // --- Cálculos (usan parseMiles para leer los valores formateados) ---
     document.getElementById('fechaNac').addEventListener('change', function() {
         const b = new Date(this.value), t = new Date();
         let a = t.getFullYear() - b.getFullYear();
@@ -427,13 +456,13 @@
     });
 
     function calc() {
-        const ip = parseFloat(document.getElementById('ingresoPrincipal').value) || 0;
-        const ia = parseFloat(document.getElementById('ingresoAdicional').value) || 0;
-        const ip2 = parseFloat(document.getElementById('ingresoPareja').value) || 0;
+        const ip = parseMiles(document.getElementById('ingresoPrincipal').value);
+        const ia = parseMiles(document.getElementById('ingresoAdicional').value);
+        const ip2 = parseMiles(document.getElementById('ingresoPareja').value);
         const total = ip + ia + ip2;
         document.getElementById('totalIngresosDisplay').textContent = 'Gs. ' + total.toLocaleString('es-PY');
         let tg = 0;
-        document.querySelectorAll('.gasto').forEach(g => tg += parseFloat(g.value) || 0);
+        document.querySelectorAll('.gasto').forEach(g => tg += parseMiles(g.value));
         const cap = total > 0 ? ((total - tg) / total) * 100 : 0;
         const el = document.getElementById('capacidadPago');
         const bar = document.getElementById('capacidadBar');
@@ -444,7 +473,9 @@
         else { el.style.color = '#a1a1aa'; bar.style.background = '#e4e4e7'; }
     }
 
-    // --- Deudas Dinámicas ---
+    document.addEventListener('input', e => { if (e.target.matches('input')) calc(); });
+
+    // --- Deudas Dinámicas (cuota también con formato de miles) ---
     document.getElementById('addDeuda').addEventListener('click', () => {
         const ph = document.getElementById('deudasEmpty'); if (ph) ph.remove();
         const d = document.createElement('div');
@@ -452,7 +483,7 @@
         d.innerHTML = `
             <div class="flex-1 space-y-3">
                 <input type="text" placeholder="Entidad (banco, financiera...)" class="fi" style="font-size:14px">
-                <div class="cpref"><span>Gs.</span><input type="number" placeholder="Cuota mensual" class="fi" style="padding-left:46px;font-size:14px" inputmode="numeric"></div>
+                <div class="cpref"><span>Gs.</span><input type="text" placeholder="Cuota mensual" class="fi num-miles" style="padding-left:46px;font-size:14px" inputmode="numeric"></div>
             </div>
             <button type="button" class="mt-1.5 p-1.5 rounded-lg text-[#d4d4d8] hover:text-[#dc2626] hover:bg-[#fef2f2] transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -475,8 +506,6 @@
     });
 
     // --- ENVÍO A BACKEND STARLETTE ---
-    
-    // Helper para obtener valor booleano de los toggles
     function getToggleValue(name) {
         const container = document.querySelector(`.tg[data-name="${name}"]`);
         if (!container) return false;
@@ -487,68 +516,56 @@
     formEl.addEventListener('submit', async e => {
         e.preventDefault();
 
-        // 1. Recolectar Deudas
         const deudasArray = [];
         document.querySelectorAll('#deudasBox .card').forEach(card => {
             const inputs = card.querySelectorAll('input');
             if(inputs.length >= 2) {
                 const entidad = inputs[0].value;
-                const cuota = inputs[1].value;
+                const cuota = parseMiles(inputs[1].value);
                 if(entidad || cuota) {
                     deudasArray.push({ entidad, cuota });
                 }
             }
         });
 
-        // 2. Construir JSON
         const formData = {
-            // Marketing (hidden inputs)
             origen_contacto: document.querySelector('[name="origen_contacto"]').value,
             campana: document.querySelector('[name="campana"]').value,
             
-            // Personales
             nombre: document.querySelector('[name="nombre"]').value,
             cedula: document.querySelector('[name="cedula"]').value,
             fecha_nacimiento: document.querySelector('[name="fecha_nacimiento"]').value,
             email: document.querySelector('[name="email"]').value,
             telefono: document.querySelector('[name="telefono"]').value,
             
-            // Profesionales
             nivel_educativo: document.querySelector('[name="nivel_educativo"]').value,
             tipo_empleo: document.querySelector('[name="tipo_empleo"]:checked').value,
             
-            // Ingresos
-            ingreso_principal: parseFloat(document.getElementById('ingresoPrincipal').value) || 0,
-            ingreso_adicional: parseFloat(document.getElementById('ingresoAdicional').value) || 0,
-            ingreso_pareja: parseFloat(document.getElementById('ingresoPareja').value) || 0,
+            ingreso_principal: parseMiles(document.getElementById('ingresoPrincipal').value),
+            ingreso_adicional: parseMiles(document.getElementById('ingresoAdicional').value),
+            ingreso_pareja: parseMiles(document.getElementById('ingresoPareja').value),
             
-            // Gastos
-            gasto_alquiler: parseFloat(document.querySelector('[name="gasto_alquiler"]').value) || 0,
-            gasto_servicios: parseFloat(document.querySelector('[name="gasto_servicios"]').value) || 0,
-            gasto_alimentacion: parseFloat(document.querySelector('[name="gasto_alimentacion"]').value) || 0,
-            gasto_salud: parseFloat(document.querySelector('[name="gasto_salud"]').value) || 0,
+            gasto_alquiler: parseMiles(document.querySelector('[name="gasto_alquiler"]').value),
+            gasto_servicios: parseMiles(document.querySelector('[name="gasto_servicios"]').value),
+            gasto_alimentacion: parseMiles(document.querySelector('[name="gasto_alimentacion"]').value),
+            gasto_salud: parseMiles(document.querySelector('[name="gasto_salud"]').value),
             
-            // Deudas y Buró
             deudas: deudasArray,
             informconf: getToggleValue('informconf'),
             atrasos_90: getToggleValue('atrasos_90'),
             
-            // Vivienda
             ubicacion_preferida: document.querySelector('[name="ubicacion_preferida"]').value,
             tipo_vivienda: document.querySelector('[name="tipo_vivienda"]:checked').value,
-            presupuesto_maximo: parseFloat(document.querySelector('[name="presupuesto_maximo"]').value) || 0,
-            entrega_inicial: parseFloat(document.querySelector('[name="entrega_inicial"]').value) || 0
+            presupuesto_maximo: parseMiles(document.querySelector('[name="presupuesto_maximo"]').value),
+            entrega_inicial: parseMiles(document.querySelector('[name="entrega_inicial"]').value)
         };
 
-        // 3. Enviar Fetch
         submitBtn.textContent = 'Enviando...';
         submitBtn.disabled = true;
 
         try {
-
             console.log("Datos enviados al servidor:", formData);
 
-            // CORRECCIÓN: URL Absoluta para coincidir con el router
             const response = await fetch('/public/precalificacion/guardar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -556,20 +573,15 @@
             });
 
             if (response.ok) {
-                // OCULTAR FORMULARIO Y UI
                 formEl.classList.add('hidden');
                 headerEl.classList.add('hidden');
                 navEl.classList.add('hidden');
-                
-                // MOSTRAR MENSAJE DE ÉXITO
                 successView.classList.remove('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-    
                 const err = await response.json();
-                console.error("Respuesta de error del servidor:", err); // IMPORTANTE
+                console.error("Respuesta de error del servidor:", err);
                 throw new Error(err.detail || 'Error en servidor');
-
             }
         } catch (error) {
             console.error("Error capturado:", error);
@@ -579,8 +591,6 @@
         }
     });
 
-    // Inicialización
-    document.addEventListener('input', e => { if (e.target.matches('input')) calc(); });
     show(0);
 </script>
 </body>
