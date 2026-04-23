@@ -1,8 +1,11 @@
 # app/routes/web.py
 from starlette.routing import Router
 from app.config import templates, custom_route
+from app.models.solicitud import Solicitud
 from app.services.lead_service import LeadService # Importamos el decorador
 from starlette.requests import Request
+from starlette.responses import JSONResponse
+from app.config import SessionLocal 
 
 router = Router()
 
@@ -57,10 +60,10 @@ async def analitica_resumen_view(request):
 #  paginas publicas
 # routes.py o donde tengas tus rutas
 
+
 @custom_route(router, "/public/precalificacion")
 async def precalificacion_view(request):
-    # Capturar parámetros de origen desde la URL
-    # Ejemplo: /public/precalificacion?origen=instagram&campana=verano2024
+    """ Vista GET: Renderiza el formulario """
     origen = request.query_params.get('origen', 'desconocido')
     campana = request.query_params.get('campana', 'organico')
     
@@ -73,3 +76,30 @@ async def precalificacion_view(request):
             "title": "Precalificación de Crédito - Che Roga Porá"
         }
     )
+
+
+
+
+
+@custom_route(router, "/public/precalificacion/guardar", methods=["POST"])
+async def guardar_precalificacion_view(request):
+    try:
+        # 1. Obtenemos los datos del cuerpo de la petición
+        data = await request.json()
+
+        # 2. Llamamos al Service para que haga el trabajo pesado
+        # Esto sigue el mismo patrón que tu ejemplo: await Service.metodo()
+        await PrecalificacionService.guardar_solicitud(data)
+
+        # 3. Retornamos la respuesta exitosa
+        return JSONResponse(
+            {"status": "ok", "message": "Solicitud guardada correctamente"}, 
+            status_code=201
+        )
+
+    except Exception as e:
+        print(f"Error en la ruta de precalificación: {e}")
+        return JSONResponse(
+            {"status": "error", "detail": "Ocurrió un error al procesar la solicitud"}, 
+            status_code=400
+        )

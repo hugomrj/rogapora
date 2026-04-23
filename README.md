@@ -46,7 +46,7 @@ DB_USER=postgres
 DB_PASSWORD=tu_password
 DB_HOST=localhost
 ```
-Agregar .env al .gitignore.
+
 
 5. Inicializar la base de datos
 python inidb.py

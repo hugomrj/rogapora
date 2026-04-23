@@ -153,7 +153,11 @@
 </header>
 
 <main class="max-w-lg mx-auto px-5 pt-7">
+    
 <form id="form" novalidate>
+    <!-- Campos ocultos para tracking (Marketing) -->
+    <input type="hidden" name="origen_contacto" value="{{ origen_contacto }}">
+    <input type="hidden" name="campana" value="{{ campana }}">
 
     <!-- 0: Datos Personales -->
     <div class="fs active" data-sec="0">
@@ -314,12 +318,25 @@
                 <div class="cpref"><label class="fl">Entrega inicial</label><span>Gs.</span><input type="number" name="entrega_inicial" class="fi" placeholder="0" inputmode="numeric"></div>
             </div>
         </div>
-        <div class="mt-6 p-4 bg-[#f0f4f8] border border-[#dde4ed] rounded-xl">
-            <p class="text-xs text-[#1B365D] leading-relaxed">Tus datos se procesan de forma segura y confidencial. Recibirás una respuesta en un plazo de 24 horas hábiles.</p>
-        </div>
+
     </div>
 
 </form>
+
+<!-- Vista de Éxito -->
+<div id="successView" class="hidden text-center py-16">
+    <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-[#dcfce7] flex items-center justify-center text-[#16a34a]">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+        </svg>
+    </div>
+    <h2 class="text-2xl font-extrabold text-[#1c1917] mb-2">¡Datos enviados con éxito!</h2>
+    <p class="text-[#71717a] mb-8 leading-relaxed">Hemos recibido tu solicitud de precalificación.<br>Un asesor se pondrá en contacto contigo pronto.</p>
+    <button type="button" onclick="location.reload()" class="px-6 py-2.5 bg-[#1B365D] text-white font-bold rounded-xl text-sm hover:bg-[#152a47] transition-colors">
+        Realizar otra consulta
+    </button>
+</div>
+
 </main>
 
 <!-- Nav -->
@@ -329,11 +346,14 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
         </button>
         <button type="button" id="nextBtn" class="flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#1B365D] text-white hover:bg-[#152a47] active:scale-[0.98] transition-all">Continuar</button>
-        <button type="submit" id="submitBtn" class="hidden flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#D98324] text-white hover:bg-[#c27620] active:scale-[0.98] transition-all">Enviar solicitud</button>
+        
+        <!-- CORRECCIÓN: Agregado form="form" para vincular el botón fuera del formulario -->
+        <button type="submit" id="submitBtn" form="form" class="hidden flex-1 py-3.5 text-sm font-bold rounded-xl bg-[#D98324] text-white hover:bg-[#c27620] active:scale-[0.98] transition-all">Enviar solicitud</button>
     </div>
 </nav>
 
 <script>
+    // --- Navegación y UI ---
     const secs = document.querySelectorAll('.fs');
     const dots = document.querySelectorAll('.sdot');
     const lines = document.querySelectorAll('.sline');
@@ -342,6 +362,10 @@
     const submitBtn = document.getElementById('submitBtn');
     const stepNum = document.getElementById('stepNum');
     const toastEl = document.getElementById('toast');
+    const formEl = document.getElementById('form');
+    const successView = document.getElementById('successView');
+    const headerEl = document.querySelector('header');
+    const navEl = document.querySelector('nav');
     let cur = 0;
 
     function show(i) {
@@ -382,7 +406,7 @@
                 });
             }
         });
-        if (!ok) { showToast('Completá los campos obligatorios para continuar'); return; }
+        if (!ok) { showToast('Completá los campos obligatorios'); return; }
         if (cur < secs.length - 1) show(cur + 1);
     });
     prevBtn.addEventListener('click', () => { if (cur > 0) show(cur - 1); });
@@ -393,7 +417,7 @@
         setTimeout(() => toastEl.classList.remove('show'), 2800);
     }
 
-    // Edad
+    // --- Cálculos ---
     document.getElementById('fechaNac').addEventListener('change', function() {
         const b = new Date(this.value), t = new Date();
         let a = t.getFullYear() - b.getFullYear();
@@ -402,7 +426,6 @@
         document.getElementById('edad').textContent = (a >= 0 && !isNaN(a)) ? a : '--';
     });
 
-    // Cálculos
     function calc() {
         const ip = parseFloat(document.getElementById('ingresoPrincipal').value) || 0;
         const ia = parseFloat(document.getElementById('ingresoAdicional').value) || 0;
@@ -421,7 +444,7 @@
         else { el.style.color = '#a1a1aa'; bar.style.background = '#e4e4e7'; }
     }
 
-    // Deudas
+    // --- Deudas Dinámicas ---
     document.getElementById('addDeuda').addEventListener('click', () => {
         const ph = document.getElementById('deudasEmpty'); if (ph) ph.remove();
         const d = document.createElement('div');
@@ -441,7 +464,7 @@
         document.getElementById('deudasBox').appendChild(d);
     });
 
-    // Toggles buró
+    // --- Toggles Booleanos ---
     document.querySelectorAll('.tg').forEach(g => {
         g.querySelectorAll('button').forEach(b => {
             b.addEventListener('click', () => {
@@ -451,15 +474,112 @@
         });
     });
 
-    // Submit
-    document.getElementById('form').addEventListener('submit', e => {
+    // --- ENVÍO A BACKEND STARLETTE ---
+    
+    // Helper para obtener valor booleano de los toggles
+    function getToggleValue(name) {
+        const container = document.querySelector(`.tg[data-name="${name}"]`);
+        if (!container) return false;
+        const yesBtn = container.querySelector('button[data-v="true"]');
+        return yesBtn.classList.contains('on-si');
+    }
+
+    formEl.addEventListener('submit', async e => {
         e.preventDefault();
-        showToast('Solicitud enviada correctamente');
-        submitBtn.textContent = 'Enviado';
+
+        // 1. Recolectar Deudas
+        const deudasArray = [];
+        document.querySelectorAll('#deudasBox .card').forEach(card => {
+            const inputs = card.querySelectorAll('input');
+            if(inputs.length >= 2) {
+                const entidad = inputs[0].value;
+                const cuota = inputs[1].value;
+                if(entidad || cuota) {
+                    deudasArray.push({ entidad, cuota });
+                }
+            }
+        });
+
+        // 2. Construir JSON
+        const formData = {
+            // Marketing (hidden inputs)
+            origen_contacto: document.querySelector('[name="origen_contacto"]').value,
+            campana: document.querySelector('[name="campana"]').value,
+            
+            // Personales
+            nombre: document.querySelector('[name="nombre"]').value,
+            cedula: document.querySelector('[name="cedula"]').value,
+            fecha_nacimiento: document.querySelector('[name="fecha_nacimiento"]').value,
+            email: document.querySelector('[name="email"]').value,
+            telefono: document.querySelector('[name="telefono"]').value,
+            
+            // Profesionales
+            nivel_educativo: document.querySelector('[name="nivel_educativo"]').value,
+            tipo_empleo: document.querySelector('[name="tipo_empleo"]:checked').value,
+            
+            // Ingresos
+            ingreso_principal: parseFloat(document.getElementById('ingresoPrincipal').value) || 0,
+            ingreso_adicional: parseFloat(document.getElementById('ingresoAdicional').value) || 0,
+            ingreso_pareja: parseFloat(document.getElementById('ingresoPareja').value) || 0,
+            
+            // Gastos
+            gasto_alquiler: parseFloat(document.querySelector('[name="gasto_alquiler"]').value) || 0,
+            gasto_servicios: parseFloat(document.querySelector('[name="gasto_servicios"]').value) || 0,
+            gasto_alimentacion: parseFloat(document.querySelector('[name="gasto_alimentacion"]').value) || 0,
+            gasto_salud: parseFloat(document.querySelector('[name="gasto_salud"]').value) || 0,
+            
+            // Deudas y Buró
+            deudas: deudasArray,
+            informconf: getToggleValue('informconf'),
+            atrasos_90: getToggleValue('atrasos_90'),
+            
+            // Vivienda
+            ubicacion_preferida: document.querySelector('[name="ubicacion_preferida"]').value,
+            tipo_vivienda: document.querySelector('[name="tipo_vivienda"]:checked').value,
+            presupuesto_maximo: parseFloat(document.querySelector('[name="presupuesto_maximo"]').value) || 0,
+            entrega_inicial: parseFloat(document.querySelector('[name="entrega_inicial"]').value) || 0
+        };
+
+        // 3. Enviar Fetch
+        submitBtn.textContent = 'Enviando...';
         submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
+
+        try {
+
+            console.log("Datos enviados al servidor:", formData);
+
+            // CORRECCIÓN: URL Absoluta para coincidir con el router
+            const response = await fetch('/public/precalificacion/guardar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                // OCULTAR FORMULARIO Y UI
+                formEl.classList.add('hidden');
+                headerEl.classList.add('hidden');
+                navEl.classList.add('hidden');
+                
+                // MOSTRAR MENSAJE DE ÉXITO
+                successView.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+    
+                const err = await response.json();
+                console.error("Respuesta de error del servidor:", err); // IMPORTANTE
+                throw new Error(err.detail || 'Error en servidor');
+
+            }
+        } catch (error) {
+            console.error("Error capturado:", error);
+            showToast('Error al enviar. Intenta nuevamente.');
+            submitBtn.textContent = 'Enviar solicitud';
+            submitBtn.disabled = false;
+        }
     });
 
+    // Inicialización
     document.addEventListener('input', e => { if (e.target.matches('input')) calc(); });
     show(0);
 </script>
