@@ -17,7 +17,7 @@ APP_DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
 # --- SQL DE LAS TABLAS ---
 
-# 1. Tabla de Orígenes (Existente)
+# 1. Tabla de Orígenes (Sin cambios)
 CREATE_ORIGENES_TABLE = """
 CREATE TABLE IF NOT EXISTS origenes_contacto (
     id SERIAL PRIMARY KEY,
@@ -74,16 +74,26 @@ CREATE TABLE IF NOT EXISTS proximas_acciones (
 """
 
 # Inserts para nuevos catálogos
+# MODIFICADO: Se asigna explícitamente el ID 0 a 'Sin Datos'
 INSERT_INTERESES = """
-INSERT INTO intereses_cliente (nombre) VALUES 
-    ('Che Roga Pora'), ('Duplex'), ('Vivienda'), 
-    ('Casa + Terreno'), ('Alquiler'), ('Comercio'), ('Sin Datos') 
+INSERT INTO intereses_cliente (id, nombre) VALUES 
+    (0, 'Sin Datos'),
+    (DEFAULT, 'Che Roga Pora'), 
+    (DEFAULT, 'Duplex'), 
+    (DEFAULT, 'Vivienda'), 
+    (DEFAULT, 'Casa + Terreno'), 
+    (DEFAULT, 'Alquiler'), 
+    (DEFAULT, 'Comercio')
 ON CONFLICT (nombre) DO NOTHING;
 """
 
+# MODIFICADO: Se asigna explícitamente el ID 0 a 'Sin Datos'
 INSERT_RANGOS = """
-INSERT INTO rangos_precio (nombre) VALUES 
-    ('Bajo'), ('Medio'), ('Alto'), ('Sin Datos') 
+INSERT INTO rangos_precio (id, nombre) VALUES 
+    (0, 'Sin Datos'),
+    (DEFAULT, 'Bajo'), 
+    (DEFAULT, 'Medio'), 
+    (DEFAULT, 'Alto')
 ON CONFLICT (nombre) DO NOTHING;
 """
 
@@ -100,8 +110,7 @@ INSERT INTO proximas_acciones (nombre) VALUES
 ON CONFLICT (nombre) DO NOTHING;
 """
 
-# 3. Tabla Leads Actualizada (Con FKs a las nuevas tablas)
-# Nota: Se eliminaron campos antiguos como texto libre de estado/interés para usar las FKs
+# 3. Tabla Leads Actualizada (Sin cambios en estructura)
 CREATE_LEADS_TABLE = """
 CREATE TABLE IF NOT EXISTS leads (
     id SERIAL PRIMARY KEY,
@@ -125,12 +134,12 @@ CREATE TABLE IF NOT EXISTS leads (
 );
 """
 
-# 4. Tabla Solicitudes (Existente)
+# 4. Tabla Solicitudes (Sin cambios)
 CREATE_SOLICITUDES_TABLE = """
 CREATE TABLE solicitudes (
     id SERIAL PRIMARY KEY,
     
-    -- Datos Personales
+    -- Data Personal
     nombre VARCHAR(255) NOT NULL,
     cedula VARCHAR(20) NOT NULL,
     fecha_nacimiento DATE,
@@ -206,7 +215,7 @@ def setup_schema():
     
     try:
         with engine_app.begin() as conn:
-            # 1. Crear tablas de catálogo primero (para las Foreign Keys)
+            # 1. Crear tablas de catálogo primero
             print("Creando tablas de catálogo...")
             conn.execute(text(CREATE_ORIGENES_TABLE))
             conn.execute(text(CREATE_INTERESES_TABLE))
@@ -214,7 +223,7 @@ def setup_schema():
             conn.execute(text(CREATE_ESTADOS_CLIENTE_TABLE))
             conn.execute(text(CREATE_PROXIMAS_ACCIONES_TABLE))
             
-            # 2. Crear tabla de leads (depende de las anteriores)
+            # 2. Crear tabla de leads
             print("Creando tabla 'leads'...")
             conn.execute(text(CREATE_LEADS_TABLE))
             
@@ -222,7 +231,7 @@ def setup_schema():
             print("Creando tabla 'solicitudes'...")
             conn.execute(text(CREATE_SOLICITUDES_TABLE))
             
-            # 4. Insertar datos iniciales en catálogos
+            # 4. Insertar datos iniciales
             print("Cargando datos iniciales...")
             conn.execute(text(INSERT_ORIGENES))
             conn.execute(text(INSERT_INTERESES))

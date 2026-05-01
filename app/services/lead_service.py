@@ -180,7 +180,10 @@ class LeadService:
 
             # 5. Situación Análisis (Texto libre, sigue igual)
             cantidad_contactos_interes_activo = db.query(func.count(Lead.id)).filter(
-                Lead.situacion_analisis.ilike('Interés activo')
+                Lead.interes_cliente_id.notin_(
+                    db.query(InteresCliente.id).filter(InteresCliente.nombre == 'Sin Datos')
+                ),
+                Lead.interes_cliente_id.isnot(None)
             ).scalar() or 0
 
             # 6. Próxima Acción (Ahora es FK)
