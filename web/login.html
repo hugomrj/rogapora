@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Che Roga CRM - Iniciar Sesion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --sidebar-bg: #0a1628;
+            --sidebar-bg-secondary: #0f1f35;
+            --sidebar-accent: #3b82f6;
+            --sidebar-accent-light: #60a5fa;
+            
+            --main-bg: #f0f4f8;
+            --main-bg-card: #ffffff;
+            --main-text: #0f1c2e;
+            --main-text-muted: #718096;
+            --main-border: #d1dce6;
+            --main-border-light: #e2eaf2;
+            
+            --accent-primary: #2563eb;
+            --accent-primary-light: #3b82f6;
+            --accent-danger: #dc2626;
+            --accent-success: #059669;
+            
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            
+            --transition-fast: 150ms ease;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: var(--main-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        /* Form styles */
+        .form-group { margin-bottom: 1rem; }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--main-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--main-border);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--main-text);
+            background: var(--main-bg-card);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            outline: none;
+        }
+
+        .form-input::placeholder { color: var(--main-text-muted); }
+
+        .form-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--accent-danger);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-error {
+            display: none;
+            color: var(--accent-danger);
+            font-size: 0.75rem;
+            margin-top: 0.375rem;
+        }
+
+        .form-error.visible { display: block; }
+
+        /* Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--sidebar-bg);
+            color: white;
+        }
+
+        .btn-primary:hover { background: var(--sidebar-bg-secondary); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn .loader {
+            display: none;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn.loading .btn-text { display: none; }
+        .btn.loading .loader { display: inline-block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Login card */
+        .login-card {
+            width: 100%;
+            max-width: 360px;
+            background: var(--main-bg-card);
+            border: 1px solid var(--main-border-light);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            margin: 0 auto 12px;
+            border-radius: 8px;
+            background: var(--sidebar-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--main-border-light);
+            margin: 20px 0;
+        }
+
+        .link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-size: 0.8125rem;
+        }
+
+        .link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="brand">
+            <div class="logo-icon">
+                <svg class="w-4 h-4" style="color: var(--sidebar-accent-light);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+            </div>
+            <p class="text-sm" style="color: var(--main-text-muted);">CRM Dashboard</p>
+        </div>
+
+        <form id="loginForm" novalidate>
+            <div class="form-group">
+                <label class="form-label">Correo</label>
+                <input type="email" id="email" class="form-input" placeholder="nombre@empresa.com" autocomplete="email" required>
+                <p id="emailError" class="form-error">Correo invalido</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Contrasena</label>
+                <input type="password" id="password" class="form-input" placeholder="Tu contrasena" autocomplete="current-password" required>
+                <p id="passwordError" class="form-error">Contrasena requerida</p>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-primary">
+                <span class="btn-text">Iniciar Sesion</span>
+                <span class="loader"></span>
+            </button>
+        </form>
+
+        <div class="divider"></div>
+
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            function showError(input, errorEl, show) {
+                input.classList.toggle('error', show);
+                errorEl.classList.toggle('visible', show);
+            }
+
+            emailInput.addEventListener('input', function() {
+                if (this.classList.contains('error') && validateEmail(this.value)) {
+                    showError(this, emailError, false);
+                }
+            });
+
+            passwordInput.addEventListener('input', function() {
+                if (this.classList.contains('error') && this.value.length > 0) {
+                    showError(this, passwordError, false);
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+
+                if (!emailInput.value || !validateEmail(emailInput.value)) {
+                    showError(emailInput, emailError, true);
+                    isValid = false;
+                } else {
+                    showError(emailInput, emailError, false);
+                }
+
+                if (!passwordInput.value) {
+                    showError(passwordInput, passwordError, true);
+                    isValid = false;
+                } else {
+                    showError(passwordInput, passwordError, false);
+                }
+
+                if (isValid) {
+                    submitBtn.classList.add('loading');
+                    submitBtn.disabled = true;
+
+                    setTimeout(function() {
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                        window.location.href = '/dashboard';
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

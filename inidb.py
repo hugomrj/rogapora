@@ -12,39 +12,17 @@ DB_PASSWORD = os.getenv("DB_PASSWORD", "admin12345")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 
 # URLs de conexión
-# Conexión a la DB del sistema para crear la base de datos destino
 SYS_DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/postgres"
-# Conexión a la DB de la aplicación
 APP_DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
 # --- SQL DE LAS TABLAS ---
 
-CREATE_LEADS_TABLE = """
-CREATE TABLE IF NOT EXISTS leads (
-    id SERIAL PRIMARY KEY,
-    id_excel VARCHAR(100), 
-    nombre_apellido TEXT,
-    fecha_contacto TEXT,
-    telefono VARCHAR(100),
-    ciudad TEXT,
-    origen_contacto VARCHAR(100),
-    interes_cliente TEXT,
-    rango_precios VARCHAR(100),
-    estado_cliente TEXT,
-    proxima_accion TEXT,
-    fecha_ultimo_contacto TEXT,
-    comentario TEXT,
-    observaciones TEXT,
-    situacion_analisis TEXT,
-    fecha_migracion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-"""
-
+# 1. Tabla de Orígenes (Existente)
 CREATE_ORIGENES_TABLE = """
 CREATE TABLE IF NOT EXISTS origenes_contacto (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) UNIQUE NOT NULL,
-    tipo VARCHAR(50),
+    tipo VARCHAR(50), -- 'digital', 'referido', 'web'
     activo BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -52,16 +30,102 @@ CREATE TABLE IF NOT EXISTS origenes_contacto (
 
 INSERT_ORIGENES = """
 INSERT INTO origenes_contacto (nombre, tipo) VALUES 
-    ('Recomendación', 'referido'),
     ('Instagram', 'digital'),
     ('Tik Tok', 'digital'),
     ('Facebook', 'digital'),
+    ('Recomendación', 'referido'),
     ('Recomendación Bco. Itau', 'referido'),
-    ('Web Che Roga Porá', 'web')
+    ('Web Che Roga Porá', 'web'),
+    ('Web Propia', 'web')
 ON CONFLICT (nombre) DO NOTHING;
 """
 
+# 2. Nuevas Tablas de Catálogo
+CREATE_INTERESES_TABLE = """
+CREATE TABLE IF NOT EXISTS intereses_cliente (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
+);
+"""
 
+CREATE_RANGOS_PRECIO_TABLE = """
+CREATE TABLE IF NOT EXISTS rangos_precio (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
+);
+"""
+
+CREATE_ESTADOS_CLIENTE_TABLE = """
+CREATE TABLE IF NOT EXISTS estados_cliente (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
+);
+"""
+
+CREATE_PROXIMAS_ACCIONES_TABLE = """
+CREATE TABLE IF NOT EXISTS proximas_acciones (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
+    activo BOOLEAN DEFAULT TRUE
+);
+"""
+
+# Inserts para nuevos catálogos
+INSERT_INTERESES = """
+INSERT INTO intereses_cliente (nombre) VALUES 
+    ('Che Roga Pora'), ('Duplex'), ('Vivienda'), 
+    ('Casa + Terreno'), ('Alquiler'), ('Comercio'), ('Sin Datos') 
+ON CONFLICT (nombre) DO NOTHING;
+"""
+
+INSERT_RANGOS = """
+INSERT INTO rangos_precio (nombre) VALUES 
+    ('Bajo'), ('Medio'), ('Alto'), ('Sin Datos') 
+ON CONFLICT (nombre) DO NOTHING;
+"""
+
+INSERT_ESTADOS = """
+INSERT INTO estados_cliente (nombre) VALUES 
+    ('Contactado (sin respuesta)'), ('No interesado'), ('En seguimiento') 
+ON CONFLICT (nombre) DO NOTHING;
+"""
+
+INSERT_ACCIONES = """
+INSERT INTO proximas_acciones (nombre) VALUES 
+    ('Seguimiento'), ('Definir propuesta'), ('Esperar Condición Externa'), 
+    ('Descartar Cliente'), ('Reintentar contacto') 
+ON CONFLICT (nombre) DO NOTHING;
+"""
+
+# 3. Tabla Leads Actualizada (Con FKs a las nuevas tablas)
+# Nota: Se eliminaron campos antiguos como texto libre de estado/interés para usar las FKs
+CREATE_LEADS_TABLE = """
+CREATE TABLE IF NOT EXISTS leads (
+    id SERIAL PRIMARY KEY,
+    id_excel VARCHAR(100), 
+    nombre_apellido TEXT,
+    fecha_contacto DATE,
+    telefono VARCHAR(100),
+    ciudad TEXT,
+    
+    -- FKs a catálogos
+    origen_contacto_id INTEGER REFERENCES origenes_contacto(id),
+    interes_cliente_id INTEGER REFERENCES intereses_cliente(id),
+    rango_precios_id INTEGER REFERENCES rangos_precio(id),
+    estado_cliente_id INTEGER REFERENCES estados_cliente(id),
+    proxima_accion_id INTEGER REFERENCES proximas_acciones(id),
+    
+    comentario TEXT,
+    observaciones TEXT,
+    situacion_analisis TEXT,
+    fecha_migracion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+# 4. Tabla Solicitudes (Existente)
 CREATE_SOLICITUDES_TABLE = """
 CREATE TABLE solicitudes (
     id SERIAL PRIMARY KEY,
@@ -102,7 +166,6 @@ CREATE TABLE solicitudes (
     entrega_inicial NUMERIC(15, 2),
     
     -- CAMPO SOLO PARA ADMIN (Backoffice)
-    -- 'pendiente', 'validado', 'rechazado'
     estado VARCHAR(20) DEFAULT 'pendiente',
     
     -- Marketing / Trazabilidad
@@ -114,9 +177,6 @@ CREATE TABLE solicitudes (
 );
 """
 
-
-
-
 def create_database():
     """Crea la base de datos física si no existe."""
     print(f"--- Verificando existencia de la base de datos: {DB_NAME} ---")
@@ -124,7 +184,6 @@ def create_database():
     
     try:
         with engine_sys.connect() as conn:
-            # Verificar si la DB ya existe
             result = conn.execute(text(f"SELECT 1 FROM pg_database WHERE datname = '{DB_NAME}'"))
             exists = result.scalar()
             
@@ -146,24 +205,32 @@ def setup_schema():
     engine_app = create_engine(APP_DB_URL)
     
     try:
-        with engine_app.begin() as conn:  # .begin() maneja el COMMIT automáticamente
+        with engine_app.begin() as conn:
+            # 1. Crear tablas de catálogo primero (para las Foreign Keys)
+            print("Creando tablas de catálogo...")
+            conn.execute(text(CREATE_ORIGENES_TABLE))
+            conn.execute(text(CREATE_INTERESES_TABLE))
+            conn.execute(text(CREATE_RANGOS_PRECIO_TABLE))
+            conn.execute(text(CREATE_ESTADOS_CLIENTE_TABLE))
+            conn.execute(text(CREATE_PROXIMAS_ACCIONES_TABLE))
+            
+            # 2. Crear tabla de leads (depende de las anteriores)
             print("Creando tabla 'leads'...")
             conn.execute(text(CREATE_LEADS_TABLE))
             
-            print("Creando tabla 'origenes_contacto'...")
-            conn.execute(text(CREATE_ORIGENES_TABLE))
-            
+            # 3. Crear tabla solicitudes
             print("Creando tabla 'solicitudes'...")
             conn.execute(text(CREATE_SOLICITUDES_TABLE))
             
-            print("Cargando datos iniciales de orígenes...")
+            # 4. Insertar datos iniciales en catálogos
+            print("Cargando datos iniciales...")
             conn.execute(text(INSERT_ORIGENES))
-
-            print("Cargando datos iniciales de orígenes...")
-            conn.execute(text(INSERT_ORIGENES))
-
+            conn.execute(text(INSERT_INTERESES))
+            conn.execute(text(INSERT_RANGOS))
+            conn.execute(text(INSERT_ESTADOS))
+            conn.execute(text(INSERT_ACCIONES))
             
-        print("✅ [EXITO]: Esquema de base de datos listo.")
+        print("✅ [EXITO]: Esquema de base de datos actualizado y listo.")
         
     except Exception as e:
         print(f"❌ [ERROR]: Error al crear el esquema: {e}")
@@ -172,7 +239,5 @@ def setup_schema():
         engine_app.dispose()
 
 if __name__ == "__main__":
-    # Primero creamos el contenedor (la DB)
     create_database()
-    # Luego creamos el contenido (las tablas)
     setup_schema()

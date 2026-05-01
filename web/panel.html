@@ -141,6 +141,9 @@
             transition: all var(--transition-base);
             padding-left: 3rem;
             position: relative;
+            font-size: 0.8rem;            
+            margin-left:  0.8rem;
+
         }
 
         .submenu-item::before {
@@ -162,19 +165,13 @@
             background: transparent;
         }
 
-        .submenu-item:hover::before {
-            background: var(--sidebar-accent-light);
-            opacity: 1;
-        }
+
 
         .submenu-item.active {
             color: var(--sidebar-accent-light);
         }
 
-        .submenu-item.active::before {
-            background: var(--sidebar-accent-light);
-            opacity: 1;
-        }
+
 
         .submenu-arrow {
             transition: transform var(--transition-base);
@@ -337,7 +334,262 @@
             background: var(--gradient-accent-bar);
             border-radius: 0 4px 4px 0;
         }
+
+
+/* === FORMULARIOS === */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--main-text);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--main-border);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--main-text);
+    background: var(--main-bg-card);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+}
+
+.form-input::placeholder {
+    color: var(--main-text-muted);
+}
+
+.form-input:hover {
+    border-color: #a0aec0;
+}
+
+.form-input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-input:disabled {
+    background: var(--main-bg);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.form-input.error {
+    border-color: var(--accent-danger);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.form-input.success {
+    border-color: var(--accent-success);
+}
+
+.form-error {
+    display: none;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--accent-danger);
+    font-size: 0.75rem;
+    margin-top: 0.375rem;
+}
+
+.form-error.visible {
+    display: flex;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--main-text-muted);
+    margin-top: 0.375rem;
+}
+
+/* === BOTONES === */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-primary {
+    background: var(--sidebar-bg);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--sidebar-bg-secondary);
+}
+
+.btn-primary:active {
+    background: var(--sidebar-bg-active);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--main-border);
+    color: var(--main-text);
+}
+
+.btn-secondary:hover {
+    background: var(--main-bg);
+    border-color: var(--main-text-muted);
+}
+
+.btn-accent {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.btn-accent:hover {
+    background: var(--accent-primary-light);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Loader */
+.btn .loader {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+.btn.loading .btn-text { display: none; }
+.btn.loading .loader { display: inline-block; }
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* === CHECKBOX === */
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    color: var(--main-text-muted);
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--accent-primary);
+    cursor: pointer;
+}
+
+/* === LINKS === */
+.link {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.link:hover {
+    color: var(--accent-primary-light);
+}
+
+/* === DIVIDER === */
+.divider {
+    height: 1px;
+    background: var(--main-border-light);
+    margin: 1.5rem 0;
+}
+
+
+/* === ESTILOS DE TABLA === */
+.table-container {
+    background: var(--main-bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--main-border-light);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    width: 100%;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.custom-table thead {
+    background: var(--main-bg-alt);
+    border-bottom: 1px solid var(--main-border);
+}
+
+.custom-table th {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--main-text-secondary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.025em;
+}
+
+.custom-table tbody tr {
+    border-bottom: 1px solid var(--main-border-light);
+    transition: background var(--transition-fast);
+}
+
+.custom-table tbody tr:hover {
+    background-color: rgba(37, 99, 235, 0.02); /* Un toque azul muy sutil */
+}
+
+.custom-table td {
+    padding: 14px 16px;
+    color: var(--main-text);
+    vertical-align: middle;
+}
+
+/* Scroll horizontal suave para móviles */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+
+
+
+
     </style>
+    
 </head>
 <body class="min-h-screen bg-pattern">
 
@@ -398,7 +650,20 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
+
                     <ul class="submenu space-y-0.5 mt-1">
+                        
+                        <li>
+                            <a hx-get="/leads/list" 
+                               hx-target="#main-content" 
+                               class="sidebar-item submenu-item flex items-center gap-2 px-3 py-2 text-sm focus-ring cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                                </svg>
+                                Listado Leads
+                            </a>
+                        </li>
+
                         <li>
                             <a hx-get="/lead-importar" 
                             hx-target="#main-content" 
@@ -420,6 +685,7 @@
                             </a>
                         </li>
                     </ul>
+
                 </li>
 
                 

@@ -1,18 +1,21 @@
-
+# app/services/lead_service.py
 import pandas as pd
 import io
 import numpy as np
 from starlette.responses import HTMLResponse
-from app.models.lead import Lead
 from app.config import SessionLocal
 from sqlalchemy import delete, func
 
+from app.models.catalogos import EstadoCliente, InteresCliente, ProximaAccion, RangoPrecio
+from app.models.lead import Lead
+from app.models.origenes_contacto import OrigenContacto
+
 class LeadService:
+    
     @staticmethod
     async def ejecutar_migracion_y_responder(archivo) -> HTMLResponse:
         try:
             contenido = await archivo.read()
-            # Leemos el Excel tal cual viene
             df = pd.read_excel(io.BytesIO(contenido))
             
             # Limpieza global de nulos de Pandas (NaN) a None de Python
@@ -20,46 +23,67 @@ class LeadService:
             registros_creados = 0
             
             with SessionLocal() as db:
-                for _, row in df.iterrows():
-                    # Helper para obtener valor por índice y limpiar espacios
-                    def get_val(idx):
-                        try:
-                            val = row.iloc[idx]
-                            return str(val).strip() if val is not None and str(val).lower() != 'nan' else None
-                        except:
-                            return None
+                # --- 1. PRE-CARGA DE CATÁLOGOS EN MEMORIA ---
+                # Esto es mucho más rápido que buscar en la DB por cada fila
+                def get_map(model_class):
+                    return {item.nombre: item.id for item in db.query(model_class).all()}
 
-                    # --- TRATAMIENTO DE FECHA (Posición 2: Fecha de Contacto) ---
+                origenes_map = get_map(OrigenContacto)
+                intereses_map = get_map(InteresCliente)
+                rangos_map = get_map(RangoPrecio)
+                estados_map = get_map(EstadoCliente)
+                acciones_map = get_map(ProximaAccion)
+
+                # Helper para obtener valor por índice
+                def get_val(idx):
+                    try:
+                        val = row.iloc[idx]
+                        return str(val).strip() if val is not None and str(val).lower() != 'nan' else None
+                    except:
+                        return None
+
+                # --- 2. ITERACIÓN DEL EXCEL ---
+                for _, row in df.iterrows():
+                    # Tratamiento de Fecha
                     raw_fecha = row.iloc[2]
                     fecha_db = None
                     if raw_fecha:
                         try:
-                            # Convertimos a YYYY-MM-DD para que el ordenamiento en DB sea correcto
                             fecha_db = pd.to_datetime(raw_fecha, dayfirst=True).strftime('%Y-%m-%d')
                         except:
                             fecha_db = get_val(2)
 
-                    # --- MAPEO POR POSICIÓN (Basado en tu imagen amarilla) ---
+                    # Obtención de valores de texto del Excel
+                    txt_origen = get_val(5)
+                    txt_interes = get_val(6)
+                    txt_rango = get_val(7)
+                    txt_estado = get_val(8)
+                    txt_accion = get_val(9)
+
+                    # --- 3. CREACIÓN DEL LEAD CON IDs ---
+                    # Nota: Se eliminaron campos que no están en tu nueva estructura (fecha_ultimo_contacto, etc.)
                     nuevo_lead = Lead(
-                        id_excel=get_val(0),              # Id Cliente
-                        nombre_apellido=get_val(1),       # Nombre y Apellido
-                        fecha_contacto=fecha_db,           # Fecha de Contacto (Procesada)
-                        telefono=get_val(3),              # Telefono
-                        ciudad=get_val(4),                # Ciudad
-                        origen_contacto=get_val(5),       # Origen del Contacto
-                        interes_cliente=get_val(6),       # Interes del Cliente
-                        rango_precios=get_val(7),         # Rango de Precios
-                        estado_cliente=get_val(8),        # Estado Cliente
-                        proxima_accion=get_val(9),        # Proxima Accion
-                        fecha_ultimo_contacto=get_val(10),# Fecha del ultimo contacto
-                        comentario=get_val(11),           # Comentario
-                        observaciones=get_val(12),        # Observaciones
-                        situacion_analisis=get_val(13)    # Situacion según Analisis
+                        id_excel=get_val(0),
+                        nombre_apellido=get_val(1),
+                        fecha_contacto=fecha_db,
+                        telefono=get_val(3),
+                        ciudad=get_val(4),
+                        
+                        # Mapeo de Texto -> ID (usando los diccionarios cargados)
+                        # Si el texto no existe en el catálogo, asigna None
+                        origen_contacto_id=origenes_map.get(txt_origen),
+                        interes_cliente_id=intereses_map.get(txt_interes),
+                        rango_precios_id=rangos_map.get(txt_rango),
+                        estado_cliente_id=estados_map.get(txt_estado),
+                        proxima_accion_id=acciones_map.get(txt_accion),
+                        
+                        # Campos de texto directo
+                        comentario=get_val(11),        # Ajustar índice si hizo falta
+                        observaciones=get_val(12),     # Ajustar índice si hizo falta
+                        situacion_analisis=get_val(13) # Ajustar índice si hizo falta
                     )
 
-                    # Solo procesamos si hay un nombre (evita filas vacías al final del Excel)
                     if nuevo_lead.nombre_apellido:
-                        # Evitar duplicados si existe el ID de Excel
                         exists = False
                         if nuevo_lead.id_excel:
                             exists = db.query(Lead).filter(Lead.id_excel == nuevo_lead.id_excel).first()
@@ -68,7 +92,6 @@ class LeadService:
                             db.add(nuevo_lead)
                             registros_creados += 1
 
-                
                 db.commit()
 
             return HTMLResponse(content=f"""
@@ -101,13 +124,10 @@ class LeadService:
             """, status_code=500)
         
 
-
     @staticmethod
     async def limpiar_tabla_y_responder() -> HTMLResponse:
         try:
-            # Usamos el bloque 'with' igual que en tu migración exitosa
             with SessionLocal() as db:
-                # delete(Lead) usa el modelo que me pasaste arriba
                 result = db.execute(delete(Lead))
                 db.commit()
                 count = result.rowcount
@@ -120,14 +140,8 @@ class LeadService:
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <p class="text-sm font-bold text-green-800">
-                        Tabla vaciada
-                        </p>
-                        <p class="text-xs text-green-700">Se eliminaron correctamente 
-                            <span class="font-bold">
-                                {count}</span> registros
-                            </span>.
-                        </p>
+                        <p class="text-sm font-bold text-green-800">Tabla vaciada</p>
+                        <p class="text-xs text-green-700">Se eliminaron correctamente <span class="font-bold">{count}</span> registros.</p>
                     </div>
                 </div>
             """)
@@ -142,43 +156,48 @@ class LeadService:
     @staticmethod
     async def obtener_estadisticas_resumen():
         with SessionLocal() as db:
-            # 1. Universo total de registros
+            # 1. Universo total
             cantidad_total_contactos = db.query(func.count(Lead.id)).scalar() or 0
             
-            # 2. Conteo de prospectos que no respondieron
+            # 2. Conteo por comentario (Texto libre, sigue igual)
             cantidad_contactos_sin_respuesta = db.query(func.count(Lead.id)).filter(
                 Lead.comentario.ilike('%Solo Consulto, no respondió%')
             ).scalar() or 0
             
-            # 3. Conteo de leads en etapa de seguimiento activo
-            cantidad_contactos_en_seguimiento = db.query(func.count(Lead.id)).filter(
-                Lead.estado_cliente.ilike('En seguimiento')
-            ).scalar() or 0
+            # 3. Conteo por Estado (Ahora es FK, necesitamos el ID del estado)
+            # Buscamos el ID del estado "En seguimiento"
+            estado_seg = db.query(EstadoCliente.id).filter(EstadoCliente.nombre == 'En seguimiento').first()
+            cantidad_contactos_en_seguimiento = 0
+            if estado_seg:
+                cantidad_contactos_en_seguimiento = db.query(func.count(Lead.id)).filter(
+                    Lead.estado_cliente_id == estado_seg.id
+                ).scalar() or 0
 
-            # 4. Conteo de leads localizados en España
+            # 4. Ciudad (Texto libre, sigue igual)
             cantidad_contactos_desde_espana = db.query(func.count(Lead.id)).filter(
                 Lead.ciudad.ilike('España')
             ).scalar() or 0
 
-            # 5. Conteo de leads con interés activo confirmado
+            # 5. Situación Análisis (Texto libre, sigue igual)
             cantidad_contactos_interes_activo = db.query(func.count(Lead.id)).filter(
                 Lead.situacion_analisis.ilike('Interés activo')
             ).scalar() or 0
 
-            # 6. Conteo de leads pendientes de reconexión (Dato Real)
-            cantidad_contactos_pendientes_reconexion = db.query(func.count(Lead.id)).filter(
-                Lead.proxima_accion.ilike('Reintentar contacto')
-            ).scalar() or 0
+            # 6. Próxima Acción (Ahora es FK)
+            # Buscamos el ID de la acción "Reintentar contacto"
+            accion_reintentar = db.query(ProximaAccion.id).filter(ProximaAccion.nombre == 'Reintentar contacto').first()
+            cantidad_contactos_pendientes_reconexion = 0
+            if accion_reintentar:
+                cantidad_contactos_pendientes_reconexion = db.query(func.count(Lead.id)).filter(
+                    Lead.proxima_accion_id == accion_reintentar.id
+                ).scalar() or 0
             
-            # --- Lógica de Cálculos de Porcentaje ---
+            # --- Cálculos de Porcentaje ---
             porcentaje_sin_respuesta = 0
             tasa_conversion_efectiva = 0
             
             if cantidad_total_contactos > 0:
-                # Porcentaje de nula respuesta
                 porcentaje_sin_respuesta = (cantidad_contactos_sin_respuesta / cantidad_total_contactos) * 100
-                
-                # Conversión = (Interés Activo / Total) * 100
                 tasa_conversion_efectiva = (cantidad_contactos_interes_activo / cantidad_total_contactos) * 100
 
             return {
@@ -189,7 +208,7 @@ class LeadService:
                 "interes_confirmado": cantidad_contactos_interes_activo,
                 "pendientes_reconectar": cantidad_contactos_pendientes_reconexion,
                 "conversion_pct": f"{tasa_conversion_efectiva:.1f}%",
-                
-                # Único placeholder restante (requiere comparativa histórica mensual)
                 "caida_leads": "-"
             }
+
+

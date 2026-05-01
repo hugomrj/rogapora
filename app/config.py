@@ -30,12 +30,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-# 4. Este es el decorador global que ya tenías
-def custom_route(router, path, methods=["GET"]):
-    def decorator(func):
-        router.routes.append(Route(path, endpoint=func, methods=methods))
-        return func
-    return decorator
 
 
 # Función de ayuda para obtener sesión en las rutas

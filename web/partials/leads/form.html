@@ -1,0 +1,148 @@
+<div class="animate-fade-in-up">
+    
+    <div class="card p-6">
+        
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-slate-800">
+                {{ 'Editar Lead' if lead else 'Nuevo Lead' }}
+            </h2>
+            <p class="text-sm text-slate-500">Completa los datos del prospecto</p>
+        </div>
+
+        <form hx-post="/leads/save" hx-target="#main-content" class="space-y-4">
+            
+            {% if lead %}
+            <input type="hidden" name="id" value="{{ lead.id }}">
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <div class="col-span-2 form-group">
+                    <label class="form-label">Nombre y Apellido</label>
+                    <input type="text" name="nombre_apellido"
+                           value="{{ lead.nombre_apellido if lead else '' }}"
+                           required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" name="telefono"
+                           value="{{ lead.telefono if lead else '' }}"
+                           required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ciudad</label>
+                    <input type="text" name="ciudad"
+                           value="{{ lead.ciudad if lead else '' }}"
+                           class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fecha de Contacto</label>
+                    <input type="date" name="fecha_contacto"
+                           value="{{ lead.fecha_contacto.strftime('%Y-%m-%d') if lead and lead.fecha_contacto else '' }}"
+                           class="form-input">
+                </div>
+
+                <!-- Campo Origen (Select) -->
+                <div class="form-group">
+                    <label class="form-label">Origen Contacto</label>
+                    <select name="origen_contacto_id" class="form-input">
+                        <option value="">-- Seleccionar --</option>
+                        {% for item in origenes %}
+                        <option value="{{ item.id }}" 
+                            {% if lead and lead.origen_contacto_id == item.id %}selected{% endif %}>
+                            {{ item.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Campo Interés (Select) -->
+                <div class="form-group">
+                    <label class="form-label">Interés del Cliente</label>
+                    <select name="interes_cliente_id" class="form-input">
+                        <option value="">-- Seleccionar --</option>
+                        {% for item in intereses %}
+                        <option value="{{ item.id }}" 
+                            {% if lead and lead.interes_cliente_id == item.id %}selected{% endif %}>
+                            {{ item.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Campo Rango Precios (Select) -->
+                <div class="form-group">
+                    <label class="form-label">Rango Precios</label>
+                    <select name="rango_precios_id" class="form-input">
+                        <option value="">-- Seleccionar --</option>
+                        {% for item in rangos %}
+                        <option value="{{ item.id }}" 
+                            {% if lead and lead.rango_precios_id == item.id %}selected{% endif %}>
+                            {{ item.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Campo Estado Cliente (Select) -->
+                <div class="form-group">
+                    <label class="form-label">Estado del Cliente</label>
+                    <select name="estado_cliente_id" class="form-input">
+                        <option value="">-- Seleccionar --</option>
+                        {% for item in estados %}
+                        <option value="{{ item.id }}" 
+                            {% if lead and lead.estado_cliente_id == item.id %}selected{% endif %}>
+                            {{ item.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Campo Próxima Acción (Select) -->
+                <div class="form-group">
+                    <label class="form-label">Próxima Acción</label>
+                    <select name="proxima_accion_id" class="form-input">
+                        <option value="">-- Seleccionar --</option>
+                        {% for item in acciones %}
+                        <option value="{{ item.id }}" 
+                            {% if lead and lead.proxima_accion_id == item.id %}selected{% endif %}>
+                            {{ item.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Situación Análisis</label>
+                <textarea name="situacion_analisis" rows="2"
+                          class="form-input">{{ lead.situacion_analisis if lead else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Observaciones</label>
+                <textarea name="observaciones" rows="2"
+                          class="form-input">{{ lead.observaciones if lead else '' }}</textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <button type="button"
+                        hx-get="/leads/list"
+                        hx-target="#main-content"
+                        class="btn btn-secondary btn-sm">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="btn btn-accent btn-sm shadow-md active:scale-95">
+                    {{ 'Guardar Cambios' if lead else 'Registrar Lead' }}
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>

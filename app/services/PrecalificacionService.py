@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.config import SessionLocal
-from app.models import Solicitud  # Asegúrate de importar tu modelo
+from app.models.solicitud import Solicitud
 from starlette.concurrency import run_in_threadpool
 
 class PrecalificacionService:

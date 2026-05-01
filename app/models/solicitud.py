@@ -1,3 +1,4 @@
+# app/models/solicitud.py
 from sqlalchemy import Column, Integer, String, Date, Numeric, Boolean, DateTime, func
 from sqlalchemy.dialects.postgresql import JSONB
 from app.config import Base
